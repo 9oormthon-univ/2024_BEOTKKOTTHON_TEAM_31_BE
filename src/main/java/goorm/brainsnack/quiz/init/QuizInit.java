@@ -5,7 +5,6 @@ import goorm.brainsnack.quiz.domain.QuizCategory;
 import goorm.brainsnack.quiz.repository.QuizRepository;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -40,8 +39,8 @@ public class QuizInit {
 
         public void init() throws FileNotFoundException {
             try{
-                // 엑셀 파일 경로 공통화 시키기 위해서 변경할 필요가 있음
-                String excelFilePath = "/Users/supportkim/Desktop/test.xlsx";
+
+                String excelFilePath = "src/main/java/goorm/brainsnack/quiz/init/data-init.xlsx";
                 FileInputStream fileInputStream = new FileInputStream(new File(excelFilePath));
 
                 // 워크북(엑셀 파일) 생성
@@ -101,21 +100,8 @@ public class QuizInit {
             String choiceFifth = row.getCell(8).getStringCellValue();
             int answer = (int) row.getCell(9).getNumericCellValue();
             String solution = row.getCell(10).getStringCellValue();
-            Quiz quiz = Quiz.builder()
-                    .category(quizCategory)
-                    .quizNum(quizNum)
-                    .title(title)
-                    .example(example)
-                    .choiceFirst(choiceFirst)
-                    .choiceSecond(choiceSecond)
-                    .choiceThird(choiceThird)
-                    .choiceFourth(choiceFourth)
-                    .choiceFifth(choiceFifth)
-                    .answer(answer)
-                    .solution(solution)
-                    .isSimilar(false)
-                    .build();
-            return quiz;
+            return Quiz.of(quizNum , title , example , choiceFirst,
+                    choiceSecond ,choiceThird , choiceFourth , choiceFifth , answer , solution , Boolean.FALSE);
         }
         private static Quiz createExceptionQuiz(Row row) {
             String category = row.getCell(0).getStringCellValue();
@@ -135,21 +121,8 @@ public class QuizInit {
             String choiceFifth = String.valueOf(row.getCell(8).getNumericCellValue());
             int answer = (int) row.getCell(9).getNumericCellValue();
             String solution = row.getCell(10).getStringCellValue();
-            Quiz quiz = Quiz.builder()
-                    .category(quizCategory)
-                    .quizNum(quizNum)
-                    .title(title)
-                    .example(example)
-                    .choiceFirst(choiceFirst)
-                    .choiceSecond(choiceSecond)
-                    .choiceThird(choiceThird)
-                    .choiceFourth(choiceFourth)
-                    .choiceFifth(choiceFifth)
-                    .answer(answer)
-                    .solution(solution)
-                    .isSimilar(false)
-                    .build();
-            return quiz;
+            return Quiz.of(quizNum , title , example , choiceFirst,
+                    choiceSecond ,choiceThird , choiceFourth , choiceFifth , answer , solution , Boolean.FALSE);
         }
     }
 }

@@ -34,4 +34,37 @@ public class Quiz {
 
     @Column(length = 500)
     private String solution;
+
+    protected Quiz(int quizNum, String title, String example,
+                String choiceFirst, String choiceSecond, String choiceThird,
+                String choiceFourth, String choiceFifth, int answer, String solution) {
+        this.quizNum = quizNum;
+        this.example = example;
+        this.title = title;
+        this.choiceFirst = choiceFirst;
+        this.choiceSecond = choiceSecond;
+        this.choiceThird = choiceThird;
+        this.choiceFourth = choiceFourth;
+        this.choiceFifth = choiceFifth;
+        this.answer = answer;
+        this.solution = solution;
+    }
+
+    public static Quiz of(int quizNum, String title, String example,
+                                      String choiceFirst, String choiceSecond, String choiceThird,
+                                      String choiceFourth, String choiceFifth, int answer, String solution, Boolean isSimilar) {
+        return Quiz.builder()
+                .quizNum(quizNum)
+                .title(title)
+                .example(example)
+                .choiceFirst(choiceFirst)
+                .choiceSecond(choiceSecond)
+                .choiceThird(choiceThird)
+                .choiceFourth(choiceFourth)
+                .choiceFifth(choiceFifth)
+                .answer(answer)
+                .solution(solution)
+                .isSimilar(isSimilar)
+                .build();
+    }
 }

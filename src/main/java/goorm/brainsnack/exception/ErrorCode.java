@@ -25,6 +25,7 @@ public enum ErrorCode {
     /**
      * 문제 에러
      */
+    NOT_EXIST_QUIZ(HttpStatus.NOT_FOUND, "Q003","존재하지 않는 문제 입니다."),
 
 
     /**
