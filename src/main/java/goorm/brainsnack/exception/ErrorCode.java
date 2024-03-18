@@ -19,6 +19,7 @@ public enum ErrorCode {
     /**
      * 멤버 에러
      */
+    ALREADY_EXIST_MEMBER(HttpStatus.CONFLICT, "M001", "이미 존재하는 유저입니다."),
 
 
 
