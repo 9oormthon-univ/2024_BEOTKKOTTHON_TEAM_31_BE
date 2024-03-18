@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import goorm.brainsnack.exception.ErrorCode;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 
@@ -13,7 +14,6 @@ import java.time.LocalDateTime;
 import static goorm.brainsnack.exception.ErrorCode.SUCCESS;
 
 @Getter
-@Builder
 @JsonPropertyOrder({"time", "status", "code", "message", "result"})
 public class BaseResponse<T> {
 
@@ -22,6 +22,7 @@ public class BaseResponse<T> {
     private final HttpStatus status;
     private final String code;
     private final String message;
+
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result;
@@ -43,11 +44,11 @@ public class BaseResponse<T> {
     }
 
     //생성 메서드
-    public static BaseResponse of(ErrorCode e) {
-        return BaseResponse.builder()
-                .status(e.getStatus())
-                .code(e.getCode())
-                .message(e.getMessage())
-                .build();
-    }
+//    public static BaseResponse of(ErrorCode e) {
+//        return BaseResponse.builder()
+//                .status(e.getStatus())
+//                .code(e.getCode())
+//                .message(e.getMessage())
+//                .build();
+//    }
 }

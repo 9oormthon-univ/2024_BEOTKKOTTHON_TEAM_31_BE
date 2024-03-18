@@ -3,6 +3,8 @@ package goorm.brainsnack.quiz.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static jakarta.persistence.EnumType.*;
+
 @Getter
 @Builder
 @Entity
@@ -15,6 +17,8 @@ public class Quiz {
     @Column(name = "quiz_id")
     private Long id;
     private int quizNum;
+
+    @Enumerated(STRING)
     private QuizCategory category;
     private Boolean isSimilar;
 
@@ -27,5 +31,7 @@ public class Quiz {
     private String choiceFifth;
 
     private int answer;
+
+    @Column(length = 500)
     private String solution;
 }
