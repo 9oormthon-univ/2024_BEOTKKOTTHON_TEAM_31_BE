@@ -1,5 +1,6 @@
 package goorm.brainsnack.member.domain;
 
+import goorm.brainsnack.member.dto.MemberResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -15,4 +16,18 @@ public class Member {
     @Column(name = "member_id")
     private Long id;
     private String temporaryId;
+
+    //생성 메서드
+    public static Member from(String temporaryId) {
+        return Member.builder()
+                .temporaryId(temporaryId)
+                .build();
+    }
+
+    public static MemberResponseDto.LoginDto toMemberRequestDto(Member member) {
+        return MemberResponseDto.LoginDto.builder()
+                .id(member.id)
+                .entryCode(member.temporaryId)
+                .build();
+    }
 }
