@@ -1,16 +1,9 @@
 package goorm.brainsnack.quiz.service;
 
-import goorm.brainsnack.quiz.dto.SimilarQuizRequestDto;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Map;
+import goorm.brainsnack.quiz.domain.QuizCategory;
+import goorm.brainsnack.quiz.dto.ChatGPTRequestDto;
+import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 
 public interface ChatGPTService {
-
-    List<Map<String, Object>> modelList();
-
-    Map<String, Object> isValidModel(String modelName);
-
-//    Map<String, Object> prompt(SimilarQuizRequestDto.ChatRequestMsgDto chatRequestMsgDto);
+    SimilarQuizResponseDto.CreateDto prompt(ChatGPTRequestDto.ChatCompletionDto chatCompletionDto , QuizCategory quizCategory);
 }

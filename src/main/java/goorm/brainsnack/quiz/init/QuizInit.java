@@ -101,7 +101,7 @@ public class QuizInit {
             int answer = (int) row.getCell(9).getNumericCellValue();
             String solution = row.getCell(10).getStringCellValue();
             return Quiz.of(quizNum , title , example , choiceFirst,
-                    choiceSecond ,choiceThird , choiceFourth , choiceFifth , answer , solution , Boolean.FALSE);
+                    choiceSecond ,choiceThird , choiceFourth , choiceFifth , answer , solution , Boolean.FALSE , quizCategory);
         }
         private static Quiz createExceptionQuiz(Row row) {
             String category = row.getCell(0).getStringCellValue();
@@ -122,7 +122,7 @@ public class QuizInit {
             int answer = (int) row.getCell(9).getNumericCellValue();
             String solution = row.getCell(10).getStringCellValue();
             return Quiz.of(quizNum , title , example , choiceFirst,
-                    choiceSecond ,choiceThird , choiceFourth , choiceFifth , answer , solution , Boolean.FALSE);
+                    choiceSecond ,choiceThird , choiceFourth , choiceFifth , answer , solution , Boolean.FALSE , quizCategory);
         }
     }
 }

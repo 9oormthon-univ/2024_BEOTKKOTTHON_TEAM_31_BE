@@ -1,5 +1,6 @@
 package goorm.brainsnack.quiz.domain;
 
+import goorm.brainsnack.quiz.dto.QuizResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -35,24 +36,10 @@ public class Quiz {
     @Column(length = 500)
     private String solution;
 
-    protected Quiz(int quizNum, String title, String example,
-                String choiceFirst, String choiceSecond, String choiceThird,
-                String choiceFourth, String choiceFifth, int answer, String solution) {
-        this.quizNum = quizNum;
-        this.example = example;
-        this.title = title;
-        this.choiceFirst = choiceFirst;
-        this.choiceSecond = choiceSecond;
-        this.choiceThird = choiceThird;
-        this.choiceFourth = choiceFourth;
-        this.choiceFifth = choiceFifth;
-        this.answer = answer;
-        this.solution = solution;
-    }
-
     public static Quiz of(int quizNum, String title, String example,
                                       String choiceFirst, String choiceSecond, String choiceThird,
-                                      String choiceFourth, String choiceFifth, int answer, String solution, Boolean isSimilar) {
+                                      String choiceFourth, String choiceFifth, int answer,
+                                      String solution, Boolean isSimilar, QuizCategory category) {
         return Quiz.builder()
                 .quizNum(quizNum)
                 .title(title)
@@ -65,6 +52,22 @@ public class Quiz {
                 .answer(answer)
                 .solution(solution)
                 .isSimilar(isSimilar)
+                .category(category)
+                .build();
+    }
+
+    public static QuizResponseDto.QuizDto toQuizDto(Quiz quiz) {
+        return QuizResponseDto.QuizDto.builder()
+                .title(quiz.getTitle())
+                .example(quiz.getExample())
+                .choiceFirst(quiz.getChoiceFirst())
+                .choiceSecond(quiz.getChoiceSecond())
+                .choiceThird(quiz.getChoiceThird())
+                .choiceFourth(quiz.getChoiceFourth())
+                .choiceFifth(quiz.getChoiceFifth())
+                .answer(quiz.getAnswer())
+                .category(quiz.getCategory())
+                .solution(quiz.getSolution())
                 .build();
     }
 }
