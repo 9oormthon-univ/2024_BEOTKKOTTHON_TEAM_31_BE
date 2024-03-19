@@ -41,6 +41,7 @@ public class QuizServiceImpl implements QuizService {
 
         int totalQuizNum = memberQuizRepository.findAllByMember(member).size();
         return QuizResponseDto.GetTotalMemberDto.from(totalQuizNum);
+    }
 
     @Override
     public CategoryQuizListDto getCategoryQuizList(String categoryName) {
