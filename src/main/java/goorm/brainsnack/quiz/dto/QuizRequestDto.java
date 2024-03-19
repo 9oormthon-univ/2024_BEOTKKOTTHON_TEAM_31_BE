@@ -10,13 +10,13 @@ public class QuizRequestDto {
     @Getter
     @Builder
     public static class FullGradeRequestDto {
-        private int size;
-        private List<SingleGradeRequestDto> singleGradeRequestDtoList;
+        private List<SingleGradeRequestDto> gradeRequestList;
     }
 
     @Getter
     @Builder
     public static class SingleGradeRequestDto {
+        private Long id;
         private int quizNum;
         private String category;
         private Boolean isSimilar;

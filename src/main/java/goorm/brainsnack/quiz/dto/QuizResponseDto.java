@@ -70,7 +70,19 @@ public class QuizResponseDto {
 
     @Getter
     @Builder
-    public static class SingleGradeQuizDto {
+    public static class FullGradeDto {
+        private List<SingleGradeDto> gradeList;
+
+        public static FullGradeDto from(List<SingleGradeDto> list) {
+            return FullGradeDto.builder()
+                    .gradeList(list)
+                    .build();
+        }
+    }
+
+    @Getter
+    @Builder
+    public static class SingleGradeDto {
         private Long quizId;
         private int quizNum;
         private String title;
@@ -90,8 +102,8 @@ public class QuizResponseDto {
         private int correctAnswerNum;
         private int ratioOfCorrect;
 
-        public static SingleGradeQuizDto of(Quiz quiz, MemberQuiz memberQuiz, QuizData data, int ratio) {
-            return SingleGradeQuizDto.builder()
+        public static SingleGradeDto of(Quiz quiz, MemberQuiz memberQuiz, QuizData data, int ratio) {
+            return SingleGradeDto.builder()
                     .quizId(quiz.getId())
                     .quizNum(quiz.getQuizNum())
                     .title(quiz.getTitle())

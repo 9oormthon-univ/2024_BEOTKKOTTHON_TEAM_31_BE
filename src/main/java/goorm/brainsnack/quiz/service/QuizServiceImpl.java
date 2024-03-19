@@ -10,7 +10,7 @@ import goorm.brainsnack.quiz.domain.QuizCategory;
 import goorm.brainsnack.quiz.domain.QuizData;
 import goorm.brainsnack.quiz.dto.QuizResponseDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
-import goorm.brainsnack.quiz.dto.QuizResponseDto.SingleGradeQuizDto;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.SingleGradeDto;
 import goorm.brainsnack.quiz.repository.MemberQuizRepository;
 import goorm.brainsnack.quiz.repository.QuizDataRepository;
 import goorm.brainsnack.quiz.repository.QuizRepository;
@@ -20,8 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
-import static goorm.brainsnack.quiz.dto.QuizResponseDto.QuizDetailDto;
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 
 
 @Service
@@ -63,9 +63,16 @@ public class QuizServiceImpl implements QuizService {
                 .build();
     }
 
+    @Override
+    public FullGradeDto gradeFullQuiz(Long memberId, String category, FullGradeRequestDto request) {
+        return FullGradeDto.from(request.getGradeRequestList().stream()
+                .map(r -> gradeSingleQuiz(memberId, r.getId(), r))
+                .toList());
+    }
+
     @Transactional
     @Override
-    public SingleGradeQuizDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request) {
+    public SingleGradeDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
         Quiz quiz = quizRepository.findById(quizId)
@@ -82,7 +89,7 @@ public class QuizServiceImpl implements QuizService {
             ratio = data.getCorrectAnswerNum() / data.getQuizParticipantsNum();
         }
 
-        return SingleGradeQuizDto.of(quiz, memberQuiz, data, ratio);
+        return SingleGradeDto.of(quiz, memberQuiz, data, ratio);
     }
 
 }
