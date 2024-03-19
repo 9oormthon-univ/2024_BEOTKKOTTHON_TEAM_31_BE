@@ -7,9 +7,12 @@ import goorm.brainsnack.member.repository.MemberRepository;
 import goorm.brainsnack.quiz.domain.MemberQuiz;
 import goorm.brainsnack.quiz.domain.Quiz;
 import goorm.brainsnack.quiz.domain.QuizCategory;
+import goorm.brainsnack.quiz.domain.QuizData;
 import goorm.brainsnack.quiz.dto.QuizResponseDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.SingleGradeQuizDto;
 import goorm.brainsnack.quiz.repository.MemberQuizRepository;
+import goorm.brainsnack.quiz.repository.QuizDataRepository;
 import goorm.brainsnack.quiz.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,6 +32,7 @@ public class QuizServiceImpl implements QuizService {
     private final MemberRepository memberRepository;
     private final MemberQuizRepository memberQuizRepository;
     private final QuizRepository quizRepository;
+    private final QuizDataRepository dataRepository;
     
     @Override
     public QuizResponseDto.GetTotalMemberDto getTotalNum(Long memberId) {
@@ -59,17 +63,26 @@ public class QuizServiceImpl implements QuizService {
                 .build();
     }
 
+    @Transactional
     @Override
-    public QuizResponseDto.SingleGradeQuizDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request) {
+    public SingleGradeQuizDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
 
-        MemberQuiz memberQuiz = MemberQuiz.of(request, member, quiz);
-        Long memberQuizId = memberQuizRepository.save(memberQuiz).getId();
+        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.of(request, member, quiz));
 
-        return null;
+        QuizData data = dataRepository.findByQuiz(quiz)
+                .orElse(QuizData.from(quiz));
+        data.updateQuizData(memberQuiz);
+
+        int ratio = 0;
+        if (data.getQuizParticipantsNum() != 0) {
+            ratio = data.getCorrectAnswerNum() / data.getQuizParticipantsNum();
+        }
+
+        return SingleGradeQuizDto.of(quiz, memberQuiz, data, ratio);
     }
 
 }

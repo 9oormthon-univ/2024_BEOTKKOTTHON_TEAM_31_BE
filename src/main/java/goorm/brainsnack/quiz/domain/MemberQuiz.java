@@ -31,7 +31,7 @@ public class MemberQuiz extends BaseEntity {
     private int choice;
 
     public static MemberQuiz of(SingleGradeRequestDto request, Member member, Quiz quiz) {
-        Boolean userCorrect = false;
+        boolean userCorrect = false;
         if (quiz.getAnswer() == request.getChoice()) {
             userCorrect = true;
         }
