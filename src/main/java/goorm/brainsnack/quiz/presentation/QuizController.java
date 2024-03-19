@@ -1,6 +1,7 @@
 package goorm.brainsnack.quiz.presentation;
 
 import goorm.brainsnack.global.BaseResponse;
+
 import goorm.brainsnack.quiz.domain.Quiz;
 import goorm.brainsnack.quiz.dto.ChatGPTRequestDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto;
@@ -12,6 +13,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.GetTotalMemberDto;
+import goorm.brainsnack.quiz.service.QuizService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,19 +27,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/quiz")
 public class QuizController {
 
     private final QuizService quizService;
+
     private final ChatGPTService chatGPTService;
     private static final String COMMENT_WITH_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
             "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
     private static final String COMMENT_NO_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
             "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
 
-    @PostMapping("/{quizId}/similar-quiz")
+    @GetMapping("/{quizId}/similar-quiz")
     public ResponseEntity<BaseResponse<SimilarQuizResponseDto.CreateDto>> createSimilarQuiz(@PathVariable Long quizId) {
 
         // 1. 문제 가져오고 GPT 에게 넘길 content 만들기
@@ -60,4 +70,15 @@ public class QuizController {
         }
         return content;
     }
+
+    @GetMapping("/quiz/{category}")
+    public ResponseEntity<BaseResponse<CategoryQuizListDto>> getCategoryQuizList(@PathVariable String category) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getCategoryQuizList(category)));
+    }
+
+    @GetMapping("/members/{memberId}")
+    public ResponseEntity<BaseResponse<GetTotalMemberDto>> getTotalMember(@PathVariable Long memberId) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getTotalNum(memberId)));
+    }
+
 }

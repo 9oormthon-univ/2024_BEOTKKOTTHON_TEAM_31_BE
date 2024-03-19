@@ -3,9 +3,7 @@ package goorm.brainsnack.global;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import goorm.brainsnack.exception.ErrorCode;
-import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 
@@ -23,7 +21,6 @@ public class BaseResponse<T> {
     private final String code;
     private final String message;
 
-
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result;
 
@@ -35,7 +32,6 @@ public class BaseResponse<T> {
         this.result = result;
     }
 
-
     //요청에 실패시
     public BaseResponse(ErrorCode code) {
         this.status = code.getStatus();
@@ -43,12 +39,4 @@ public class BaseResponse<T> {
         this.message = code.getMessage();
     }
 
-    //생성 메서드
-//    public static BaseResponse of(ErrorCode e) {
-//        return BaseResponse.builder()
-//                .status(e.getStatus())
-//                .code(e.getCode())
-//                .message(e.getMessage())
-//                .build();
-//    }
 }
