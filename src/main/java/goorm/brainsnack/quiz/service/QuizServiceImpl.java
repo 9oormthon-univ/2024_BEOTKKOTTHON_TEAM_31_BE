@@ -1,21 +1,23 @@
 package goorm.brainsnack.quiz.service;
 
-import goorm.brainsnack.quiz.domain.Quiz;
-import goorm.brainsnack.quiz.domain.QuizCategory;
-import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
 import goorm.brainsnack.exception.BaseException;
 import goorm.brainsnack.exception.ErrorCode;
 import goorm.brainsnack.member.domain.Member;
 import goorm.brainsnack.member.repository.MemberRepository;
 import goorm.brainsnack.quiz.domain.MemberQuiz;
+import goorm.brainsnack.quiz.domain.Quiz;
+import goorm.brainsnack.quiz.domain.QuizCategory;
 import goorm.brainsnack.quiz.dto.QuizResponseDto;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
 import goorm.brainsnack.quiz.repository.MemberQuizRepository;
 import goorm.brainsnack.quiz.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.QuizDetailDto;
 
 
@@ -56,5 +58,18 @@ public class QuizServiceImpl implements QuizService {
                         .toList())
                 .build();
     }
-      
+
+    @Override
+    public QuizResponseDto.SingleGradeQuizDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
+
+        MemberQuiz memberQuiz = MemberQuiz.of(request, member, quiz);
+        Long memberQuizId = memberQuizRepository.save(memberQuiz).getId();
+
+        return null;
+    }
+
 }

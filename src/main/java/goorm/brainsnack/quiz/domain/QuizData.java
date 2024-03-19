@@ -23,4 +23,5 @@ public class QuizData extends BaseEntity {
     private Quiz quiz;
     private int quizParticipantsNum;
     private int correctAnswerNum;
+
 }
