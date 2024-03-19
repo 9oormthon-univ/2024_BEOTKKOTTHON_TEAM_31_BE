@@ -1,5 +1,6 @@
 package goorm.brainsnack.quiz.domain;
 
+import goorm.brainsnack.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,7 +12,7 @@ import static jakarta.persistence.EnumType.*;
 @Table(name = "Quiz_TB")
 @AllArgsConstructor(access= AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Quiz {
+public class Quiz extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "quiz_id")
