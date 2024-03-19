@@ -2,13 +2,14 @@ package goorm.brainsnack.quiz.domain;
 
 import goorm.brainsnack.global.BaseEntity;
 import goorm.brainsnack.member.domain.Member;
+import goorm.brainsnack.quiz.dto.QuizRequestDto;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
 
 @Getter
+@Builder
 @Entity
 @Table(name = "MemberQuiz_TB")
 @AllArgsConstructor(access= AccessLevel.PRIVATE)
@@ -28,4 +29,18 @@ public class MemberQuiz extends BaseEntity {
     private Quiz quiz;
     private Boolean isCorrect;
     private int choice;
+
+    public static MemberQuiz of(SingleGradeRequestDto request, Member member, Quiz quiz) {
+        boolean userCorrect = false;
+        if (quiz.getAnswer() == request.getChoice()) {
+            userCorrect = true;
+        }
+
+        return MemberQuiz.builder()
+                .member(member)
+                .quiz(quiz)
+                .isCorrect(userCorrect)
+                .choice(request.getChoice())
+                .build();
+    }
 }
