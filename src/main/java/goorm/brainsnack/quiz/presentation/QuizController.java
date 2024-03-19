@@ -1,6 +1,7 @@
 package goorm.brainsnack.quiz.presentation;
 
 import goorm.brainsnack.global.BaseResponse;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.GetTotalMemberDto;
 import goorm.brainsnack.quiz.service.QuizService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 public class QuizController {
 
     private final QuizService quizService;
+
+    @GetMapping("/quiz/{category}")
+    public ResponseEntity<BaseResponse<CategoryQuizListDto>> getCategoryQuizList(@PathVariable String category) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getCategoryQuizList(category)));
+    }
 
     @GetMapping("/members/{memberId}")
     public ResponseEntity<BaseResponse<GetTotalMemberDto>> getTotalMember(@PathVariable Long memberId) {

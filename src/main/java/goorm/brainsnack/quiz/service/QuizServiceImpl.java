@@ -1,5 +1,8 @@
 package goorm.brainsnack.quiz.service;
 
+import goorm.brainsnack.quiz.domain.Quiz;
+import goorm.brainsnack.quiz.domain.QuizCategory;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
 import goorm.brainsnack.exception.BaseException;
 import goorm.brainsnack.exception.ErrorCode;
 import goorm.brainsnack.member.domain.Member;
@@ -11,8 +14,10 @@ import goorm.brainsnack.quiz.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
+
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.QuizDetailDto;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -22,7 +27,7 @@ public class QuizServiceImpl implements QuizService {
     private final MemberRepository memberRepository;
     private final MemberQuizRepository memberQuizRepository;
     private final QuizRepository quizRepository;
-
+    
     @Override
     public QuizResponseDto.GetTotalMemberDto getTotalNum(Long memberId) {
         Member member = memberRepository.findById(memberId)
@@ -36,5 +41,19 @@ public class QuizServiceImpl implements QuizService {
 
         int totalQuizNum = memberQuizRepository.findAllByMember(member).size();
         return QuizResponseDto.GetTotalMemberDto.from(totalQuizNum);
+
+    @Override
+    public CategoryQuizListDto getCategoryQuizList(String categoryName) {
+        QuizCategory category = QuizCategory.getInstance(categoryName);
+
+        List<Quiz> quizList = quizRepository.findAllByCategory(category);
+
+        return CategoryQuizListDto.builder()
+                .size(quizList.size())
+                .quizDetailDtoList(quizList.stream()
+                        .map(QuizDetailDto::from)
+                        .toList())
+                .build();
     }
+      
 }
