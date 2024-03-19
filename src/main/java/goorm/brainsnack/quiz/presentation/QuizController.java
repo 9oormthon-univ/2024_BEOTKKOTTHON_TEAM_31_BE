@@ -30,7 +30,6 @@ import java.util.List;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/quiz")
 public class QuizController {
 
     private final QuizService quizService;
@@ -41,7 +40,7 @@ public class QuizController {
     private static final String COMMENT_NO_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
             "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
 
-    @GetMapping("/{quizId}/similar-quiz")
+    @GetMapping("/quiz/{quizId}/similar-quiz")
     public ResponseEntity<BaseResponse<SimilarQuizResponseDto.CreateDto>> createSimilarQuiz(@PathVariable Long quizId) {
 
         // 1. 문제 가져오고 GPT 에게 넘길 content 만들기
