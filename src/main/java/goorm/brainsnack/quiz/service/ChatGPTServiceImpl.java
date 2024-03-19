@@ -28,7 +28,7 @@ public class ChatGPTServiceImpl implements ChatGPTService {
     @Value("${openai.url.prompt}")
     private String promptUrl;
     @Override
-    public SimilarQuizResponseDto.CreateDto prompt(ChatGPTRequestDto.ChatCompletionDto chatCompletionDto, QuizCategory quizCategory) {
+    public SimilarQuizResponseDto.CreateDto prompt(ChatGPTRequestDto.ChatCompletionDto chatCompletionDto, String category) {
         Map<String, Object> resultMap = new HashMap<>();
         // 토큰 정보가 포함된 Header 가져오기
         HttpHeaders headers = chatGPTConfig.httpHeaders();
@@ -53,7 +53,7 @@ public class ChatGPTServiceImpl implements ChatGPTService {
         // GPT 로부터 넘어온 응답값 중에서 만들어준 유사 문제만 추출
         String[] split = extractGPTMessage(resultMap);
 
-        SimilarQuizResponseDto.CreateDto similarQuiz = createSimilarQuiz(quizCategory, split);
+        SimilarQuizResponseDto.CreateDto similarQuiz = createSimilarQuiz(category, split);
         return similarQuiz;
     }
 
@@ -68,7 +68,7 @@ public class ChatGPTServiceImpl implements ChatGPTService {
     }
 
 
-    private static SimilarQuizResponseDto.CreateDto createSimilarQuiz(QuizCategory quizCategory , String[] split) {
+    private static SimilarQuizResponseDto.CreateDto createSimilarQuiz(String category , String[] split) {
         String title = null;
         String choiceFirst = null;
         String choiceSecond = null;
@@ -121,7 +121,7 @@ public class ChatGPTServiceImpl implements ChatGPTService {
                 .choiceFifth(choiceFifth)
                 .answer(answer)
                 .example(example)
-                .category(quizCategory)
+                .category(category)
                 .isSimilar(Boolean.TRUE)
                 .build();
     }

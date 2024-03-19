@@ -56,19 +56,4 @@ public class Quiz extends BaseEntity {
                 .category(category)
                 .build();
     }
-
-    public static QuizResponseDto.QuizDto toQuizDto(Quiz quiz) {
-        return QuizResponseDto.QuizDto.builder()
-                .title(quiz.getTitle())
-                .example(quiz.getExample())
-                .choiceFirst(quiz.getChoiceFirst())
-                .choiceSecond(quiz.getChoiceSecond())
-                .choiceThird(quiz.getChoiceThird())
-                .choiceFourth(quiz.getChoiceFourth())
-                .choiceFifth(quiz.getChoiceFifth())
-                .answer(quiz.getAnswer())
-                .category(quiz.getCategory())
-                .solution(quiz.getSolution())
-                .build();
-    }
 }

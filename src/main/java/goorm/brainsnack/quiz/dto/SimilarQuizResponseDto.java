@@ -1,13 +1,13 @@
 package goorm.brainsnack.quiz.dto;
 
-import goorm.brainsnack.quiz.domain.QuizCategory;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 
 public class SimilarQuizResponseDto {
 
     @Builder @Getter
     public static class CreateDto {
-        private QuizCategory category;
+        private String category;
         private Boolean isSimilar;
         private String title;
         private String example;

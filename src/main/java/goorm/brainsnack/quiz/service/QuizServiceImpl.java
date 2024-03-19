@@ -3,13 +3,13 @@ package goorm.brainsnack.quiz.service;
 
 import goorm.brainsnack.exception.BaseException;
 import goorm.brainsnack.exception.ErrorCode;
+import goorm.brainsnack.exception.QuizException;
 import goorm.brainsnack.member.domain.Member;
 import goorm.brainsnack.member.repository.MemberRepository;
 import goorm.brainsnack.quiz.domain.MemberQuiz;
 import goorm.brainsnack.quiz.domain.Quiz;
 import goorm.brainsnack.quiz.domain.QuizCategory;
 import goorm.brainsnack.quiz.domain.QuizData;
-import goorm.brainsnack.exception.QuizException;
 import goorm.brainsnack.quiz.dto.QuizResponseDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.SingleGradeDto;
@@ -22,11 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
-import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
-
-
-import java.util.Optional;
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.FullGradeRequestDto;
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.FullGradeDto;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.QuizDetailDto;
 
 @Service
 @Transactional(readOnly = true)
@@ -39,12 +38,11 @@ public class QuizServiceImpl implements QuizService {
     private final QuizDataRepository dataRepository;
 
     @Override
-    public QuizResponseDto.QuizDto findQuiz(Long quizId) {
+    public QuizResponseDto.QuizDetailDto findQuiz(Long quizId) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new QuizException(ErrorCode.NOT_EXIST_QUIZ));
         // 여기서 DTO 로 반환해서 Controller 에게 넘겨주기
-        QuizResponseDto.QuizDto quizDto = Quiz.toQuizDto(quiz);
-        return quizDto;
+        return QuizResponseDto.QuizDetailDto.from(quiz);
     }
     
     @Override
