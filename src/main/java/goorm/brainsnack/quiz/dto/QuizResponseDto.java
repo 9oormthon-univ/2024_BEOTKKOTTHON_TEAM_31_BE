@@ -1,12 +1,28 @@
 package goorm.brainsnack.quiz.dto;
 
+import goorm.brainsnack.quiz.domain.QuizCategory;
+import jakarta.persistence.Column;
+import jakarta.persistence.Enumerated;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import goorm.brainsnack.quiz.domain.Quiz;
 import lombok.Builder;
 import lombok.Getter;
 
 import java.util.List;
 
+import static jakarta.persistence.EnumType.STRING;
+
+
 public class QuizResponseDto {
+  
+   @Getter @Builder
+    public static class QuizDto {
+        private String title;
+        private QuizCategory category;
+    }
   
     @Getter
     @Builder
@@ -49,6 +65,10 @@ public class QuizResponseDto {
         private String choiceThird;
         private String choiceFourth;
         private String choiceFifth;
+        private int answer;
+        private String solution;
+    }
+
 
         public static QuizDetailDto from(Quiz quiz) {
             return QuizDetailDto.builder()
