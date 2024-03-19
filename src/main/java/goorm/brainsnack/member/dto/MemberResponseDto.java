@@ -11,4 +11,10 @@ public class MemberResponseDto {
         private Long id;
         private String entryCode;
     }
+
+    @Getter
+    @Builder
+    public static class MainViewDto {
+        private int quizNum;
+    }
 }

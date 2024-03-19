@@ -1,5 +1,6 @@
 package goorm.brainsnack.member.domain;
 
+import goorm.brainsnack.global.BaseEntity;
 import goorm.brainsnack.member.dto.MemberResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
@@ -10,7 +11,7 @@ import lombok.*;
 @Table(name = "Member_TB")
 @AllArgsConstructor(access= AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Member {
+public class Member extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "member_id")

@@ -1,5 +1,6 @@
 package goorm.brainsnack.quiz.domain;
 
+import goorm.brainsnack.global.BaseEntity;
 import goorm.brainsnack.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "MemberQuiz_TB")
 @AllArgsConstructor(access= AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberQuiz {
+public class MemberQuiz extends BaseEntity {
 
     @Id @GeneratedValue
     @Column(name = "memberQuiz_id")

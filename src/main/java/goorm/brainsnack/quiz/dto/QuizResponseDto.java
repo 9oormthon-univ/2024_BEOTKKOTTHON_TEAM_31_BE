@@ -7,6 +7,18 @@ import lombok.Getter;
 import java.util.List;
 
 public class QuizResponseDto {
+  
+    @Getter
+    @Builder
+    public static class GetTotalMemberDto {
+        private int totalQuizNum;
+
+        public static GetTotalMemberDto from(int num) {
+            return GetTotalMemberDto.builder()
+                    .totalQuizNum(num)
+                    .build();
+        }
+    }
 
     //영역별 문제 리스트 조회 dto
     @Getter
@@ -50,7 +62,8 @@ public class QuizResponseDto {
                     .choiceThird(quiz.getChoiceThird())
                     .choiceFourth(quiz.getChoiceFourth())
                     .choiceFifth(quiz.getChoiceFifth())
-                    .build();
+              .build();
         }
     }
+    
 }

@@ -18,11 +18,9 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/login/{temporary-id}")
-    public ResponseEntity<BaseResponse<LoginDto>> login(@PathVariable("temporary-id") String temporaryId) {
+    @PostMapping("/login/{temporaryId}")
+    public ResponseEntity<BaseResponse<LoginDto>> login(@PathVariable String temporaryId) {
         return ResponseEntity.ok().body(new BaseResponse<>(memberService.login(temporaryId)));
     }
-
-
 
 }
