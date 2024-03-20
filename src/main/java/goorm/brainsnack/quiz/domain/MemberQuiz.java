@@ -24,7 +24,7 @@ public class MemberQuiz extends BaseEntity {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
     private Boolean isCorrect;
