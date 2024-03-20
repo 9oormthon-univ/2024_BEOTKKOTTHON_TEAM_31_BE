@@ -2,6 +2,8 @@ package goorm.brainsnack.quiz.domain;
 
 import goorm.brainsnack.global.BaseEntity;
 import goorm.brainsnack.member.domain.Member;
+import goorm.brainsnack.member.dto.MemberResponseDto;
+import goorm.brainsnack.quiz.dto.MemberQuizResponseDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -28,4 +30,14 @@ public class MemberQuiz extends BaseEntity {
     private Quiz quiz;
     private Boolean isCorrect;
     private int choice;
+
+    public static MemberQuizResponseDto.MemberQuizDto getMemberQuizDto(MemberQuiz memberQuiz) {
+        return MemberQuizResponseDto.MemberQuizDto.builder()
+                .quizNum(memberQuiz.getQuiz().getQuizNum())
+                .solution(memberQuiz.getQuiz().getSolution())
+                .build();
+    }
+
+
+
 }
