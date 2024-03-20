@@ -56,6 +56,9 @@ public class MemberQuiz extends BaseEntity {
                 .entryCode(member.getEntryCode())
                 .createSimilarQuizCount(result.size())
                 .memberQuizList(result)
+                .build();
+    }
+
     public static MemberQuiz of(SingleGradeRequestDto request, Member member, Quiz quiz) {
         boolean userCorrect = false;
         if (quiz.getAnswer() == request.getChoice()) {

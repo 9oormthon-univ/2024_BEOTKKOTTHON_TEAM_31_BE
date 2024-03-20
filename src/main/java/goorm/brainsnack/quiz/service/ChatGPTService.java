@@ -5,5 +5,6 @@ import goorm.brainsnack.quiz.dto.QuizResponseDto;
 import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 
 public interface ChatGPTService {
-    SimilarQuizResponseDto.CreateDto prompt(ChatGPTRequestDto.ChatCompletionDto chatCompletionDto , QuizResponseDto.QuizDto quizDto);
+    SimilarQuizResponseDto.CreateDto prompt(ChatGPTRequestDto.ChatCompletionDto chatCompletionDto , QuizResponseDto.QuizDetailDto quizDto);
+
 }

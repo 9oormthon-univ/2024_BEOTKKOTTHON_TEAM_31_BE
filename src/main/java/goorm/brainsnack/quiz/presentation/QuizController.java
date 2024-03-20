@@ -31,9 +31,9 @@ public class QuizController {
 
     private final ChatGPTService chatGPTService;
     private static final String COMMENT_WITH_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
-            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
+            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘 그리고 정답은 몇 번인지 숫자로만 넘겨줘 예를 들어 1번이면 1 , 2번이면 2 이렇게만 출력해줘";
     private static final String COMMENT_NO_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
-            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
+            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘 그리고 정답은 몇 번인지 숫자로만 넘겨줘 예를 들어 1번이면 1 , 2번이면 2 이렇게만 출력해줘";
 
     // 유사 문제 풀기
     @GetMapping("/quiz/{quizId}/similar-quiz")
@@ -83,12 +83,10 @@ public class QuizController {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeSingleQuiz(memberId, quizId, request)));
     }
 
-    @PostMapping("/members/{member-id}/quiz/{category}/grade")
+    @PostMapping("/members/{member-id}/quiz/{category}/grades")
     public ResponseEntity<BaseResponse<FullGradeDto>> gradeFullQuiz(@PathVariable("member-id") Long memberId,
                                                                     @PathVariable("category") String category,
                                                                     @RequestBody FullGradeRequestDto request) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeFullQuiz(memberId, category, request)));
     }
-
-
 }
