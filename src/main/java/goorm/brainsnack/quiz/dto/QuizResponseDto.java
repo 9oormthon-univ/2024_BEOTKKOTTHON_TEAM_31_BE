@@ -24,11 +24,11 @@ public class QuizResponseDto {
     @Getter
     @Builder
     public static class GetTotalMemberDto {
-        private int totalQuizNum;
+        private int totalQuizCounts;
 
         public static GetTotalMemberDto from(int num) {
             return GetTotalMemberDto.builder()
-                    .totalQuizNum(num)
+                    .totalQuizCounts(num)
                     .build();
         }
     }
@@ -38,11 +38,11 @@ public class QuizResponseDto {
     @Builder
     public static class CategoryQuizListDto {
         private int size;
-        private List<SingleQuizDto> quizList;
+        private List<SingleQuizDto> quizzes;
 
-        public static CategoryQuizListDto of(int quizSize, List<SingleQuizDto> quizDtoList) {
+        public static CategoryQuizListDto of(int quizSize, List<SingleQuizDto> quizDtos) {
             return CategoryQuizListDto.builder()
-                    .quizList(quizDtoList)
+                    .quizzes(quizDtos)
                     .build();
         }
     }
@@ -114,11 +114,11 @@ public class QuizResponseDto {
     @Getter
     @Builder
     public static class FullGradeDto {
-        private List<SingleGradeDto> gradeList;
+        private List<SingleGradeDto> quizzes;
 
-        public static FullGradeDto from(List<SingleGradeDto> list) {
+        public static FullGradeDto from(List<SingleGradeDto> results) {
             return FullGradeDto.builder()
-                    .gradeList(list)
+                    .quizzes(results)
                     .build();
         }
     }
@@ -141,8 +141,8 @@ public class QuizResponseDto {
         private int answer;
         private String solution;
 
-        private int quizParticipantsNum;
-        private int correctAnswerNum;
+        private int quizParticipantsCounts;
+        private int correctAnswerCounts;
         private int ratioOfCorrect;
 
         public static SingleGradeDto of(Quiz quiz, MemberQuiz memberQuiz, QuizData data, int ratio) {
@@ -160,8 +160,8 @@ public class QuizResponseDto {
                     .userChoice(memberQuiz.getChoice())
                     .answer(quiz.getAnswer())
                     .solution(quiz.getSolution())
-                    .quizParticipantsNum(data.getQuizParticipantsNum())
-                    .correctAnswerNum(data.getCorrectAnswerNum())
+                    .quizParticipantsCounts(data.getQuizParticipantsCounts())
+                    .correctAnswerCounts(data.getCorrectAnswerCounts())
                     .ratioOfCorrect(ratio)
                     .build();
         }
@@ -170,17 +170,17 @@ public class QuizResponseDto {
     @Getter
     @Builder
     public static class FullResultResponseDto {
-       private int totalQuizNum;
-       private int wrongQuizNum;
+       private int totalQuizCounts;
+       private int wrongQuizCounts;
        private String category;
-       private List<SingleResultResponseDto> quizList;
+       private List<SingleResultResponseDto> results;
 
-       public static FullResultResponseDto of(int totalQuizNum, int wrongQuizNum, List<MemberQuiz> memberQuizList, QuizCategory category) {
+       public static FullResultResponseDto of(int totalQuizCounts, int wrongQuizCounts, List<MemberQuiz> memberQuizzes, QuizCategory category) {
            return FullResultResponseDto.builder()
-                   .totalQuizNum(totalQuizNum)
-                   .wrongQuizNum(wrongQuizNum)
+                   .totalQuizCounts(totalQuizCounts)
+                   .wrongQuizCounts(wrongQuizCounts)
                    .category(category.name())
-                   .quizList(memberQuizList.stream()
+                   .results(memberQuizzes.stream()
                            .map(SingleResultResponseDto::from)
                            .toList())
                    .build();

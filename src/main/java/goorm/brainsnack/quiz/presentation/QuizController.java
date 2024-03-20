@@ -69,8 +69,8 @@ public class QuizController {
 
     //영역별 모든 문제 조회
     @GetMapping("/quiz/{category}")
-    public ResponseEntity<BaseResponse<CategoryQuizListDto>> getCategoryQuizList(@PathVariable String category) {
-        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getCategoryQuizList(category)));
+    public ResponseEntity<BaseResponse<CategoryQuizListDto>> getCategoryQuizzes(@PathVariable String category) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getCategoryQuizzes(category)));
     }
 
     //총 풀이 문제 조회

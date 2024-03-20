@@ -57,14 +57,14 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public CategoryQuizListDto getCategoryQuizList(String categoryName) {
+    public CategoryQuizListDto getCategoryQuizzes(String categoryName) {
         QuizCategory category = QuizCategory.getInstance(categoryName);
 
-        List<Quiz> quizList = quizRepository.findAllByCategoryAndIsSimilar(category, false);
+        List<Quiz> quizzes = quizRepository.findAllByCategoryAndIsSimilar(category, false);
 
         return CategoryQuizListDto.builder()
-                .size(quizList.size())
-                .quizList(quizList.stream()
+                .size(quizzes.size())
+                .quizzes(quizzes.stream()
                         .map(SingleQuizDto::from)
                         .toList())
                 .build();
@@ -96,8 +96,8 @@ public class QuizServiceImpl implements QuizService {
         data.updateQuizData(memberQuiz);
 
         int ratio = 0;
-        if (data.getQuizParticipantsNum() != 0) {
-            ratio = data.getCorrectAnswerNum() / data.getQuizParticipantsNum();
+        if (data.getQuizParticipantsCounts() != 0) {
+            ratio = data.getCorrectAnswerCounts() / data.getQuizParticipantsCounts();
         }
 
         return SingleGradeDto.of(quiz, memberQuiz, data, ratio);
