@@ -16,5 +16,5 @@ public interface QuizService {
 
     MultiGradeDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request);
 
-    MultiResultResponseDto getFullResult(Long memberId, String category, MultiGradeRequestDto request);
+    MultiResultResponseDto getFullResult(Long memberId, String category);
 }

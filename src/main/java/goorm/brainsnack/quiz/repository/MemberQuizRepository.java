@@ -16,9 +16,9 @@ public interface MemberQuizRepository extends JpaRepository<MemberQuiz, Long> {
     Optional<MemberQuiz> findByMemberAndQuiz(Member member, Quiz quiz);
     List<MemberQuiz> findAllByMember(Member member);
     @Query("SELECT mq FROM MemberQuiz mq " +
-            "JOIN FETCH mq.member m JOIN FETCH mq.quiz q " +
-            "WHERE m = :member AND q.category = :category")
-    List<MemberQuiz> findAllByMemberQuizAndCategory(@Param("member") Member member, @Param("category") QuizCategory category);
+            "JOIN mq.member m JOIN mq.quiz.category c " +
+            "WHERE m = :member AND c = :category")
+    List<MemberQuiz> findAllByMemberAndCategory(@Param("member") Member member, @Param("category") QuizCategory category);
 
     @Query("SELECT mq From MemberQuiz mq " +
             "JOIN FETCH mq.member m JOIN FETCH mq.quiz q " +

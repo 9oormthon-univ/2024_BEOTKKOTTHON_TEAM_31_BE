@@ -97,8 +97,7 @@ public class QuizController {
     //전체 문제 채점 결과 리스트 조회
     @GetMapping("/members/{member-id}/quiz/{category}/grade")
     public ResponseEntity<BaseResponse<MultiResultResponseDto>> getFullQuizResult(@PathVariable("member-id") Long memberId,
-                                                                                  @PathVariable("category") String category,
-                                                                                  @RequestBody MultiGradeRequestDto request) {
-        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getFullResult(memberId, category, request)));
+                                                                                  @PathVariable("category") String category) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getFullResult(memberId, category)));
     }
 }

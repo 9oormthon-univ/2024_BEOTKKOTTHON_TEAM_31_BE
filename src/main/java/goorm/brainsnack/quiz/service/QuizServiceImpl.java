@@ -100,10 +100,10 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public MultiResultResponseDto getFullResult(Long memberId, String categoryInput, MultiGradeRequestDto request) {
+    public MultiResultResponseDto getFullResult(Long memberId, String categoryInput) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
-        List<MemberQuiz> memberQuizList = memberQuizRepository.findAllByMemberQuizAndCategory(member, QuizCategory.getInstance(categoryInput));
+        List<MemberQuiz> memberQuizList = memberQuizRepository.findAllByMemberAndCategory(member, QuizCategory.getInstance(categoryInput));
         QuizCategory category = QuizCategory.getInstance(categoryInput);
 
         int totalQuizNum = quizRepository.findAllByCategoryAndIsSimilar(category, false).size();
