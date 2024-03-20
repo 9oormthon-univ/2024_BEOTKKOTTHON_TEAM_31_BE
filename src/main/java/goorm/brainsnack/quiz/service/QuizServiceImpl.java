@@ -68,9 +68,9 @@ public class QuizServiceImpl implements QuizService {
 
         return CategoryQuizListDto.builder()
                 .size(quizList.size())
-                .quizDetailDtoList(quizList.stream()
-                        .map(QuizDetailDto::from)
-                        .toList())
+//                .quizDetailDtoList(quizList.stream()
+//                        .map(QuizDetailDto::from)
+//                        .toList())
                 .build();
     }
 

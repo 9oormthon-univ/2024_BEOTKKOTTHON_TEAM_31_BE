@@ -31,4 +31,11 @@ public class Member extends BaseEntity {
                 .entryCode(member.temporaryId)
                 .build();
     }
+
+    public static MemberResponseDto.MemberDto toMemberDto(Member member) {
+        return MemberResponseDto.MemberDto.builder()
+                .id(member.id)
+                .entryCode(member.temporaryId)
+                .build();
+    }
 }

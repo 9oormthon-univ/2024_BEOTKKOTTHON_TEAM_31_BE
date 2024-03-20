@@ -7,9 +7,9 @@ import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 
 public interface QuizService {
-
+    QuizResponseDto.QuizDto findQuiz(Long quizId);
+    QuizResponseDto.GetTotalMemberDto getTotalNum(Long memberId);
     QuizResponseDto.QuizDetailDto findQuiz(Long quizId);
-  
     GetTotalMemberDto getTotalNum(Long memberId);
     CategoryQuizListDto getCategoryQuizList(String category);
 

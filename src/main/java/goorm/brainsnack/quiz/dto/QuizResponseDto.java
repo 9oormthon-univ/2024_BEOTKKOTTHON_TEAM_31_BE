@@ -11,6 +11,22 @@ import java.util.List;
 
 
 public class QuizResponseDto {
+
+
+    @Getter
+    @Builder
+    public static class QuizDto {
+        private String title;
+        private QuizCategory category;
+        private String example;
+        private String choiceFirst;
+        private String choiceSecond;
+        private String choiceThird;
+        private String choiceFourth;
+        private String choiceFifth;
+        private int answer;
+        private String solution;
+        private int quizNum;
   
    @Getter
    @Builder
@@ -20,7 +36,7 @@ public class QuizResponseDto {
 
 
     }
-  
+
     @Getter
     @Builder
     public static class GetTotalMemberDto {
@@ -65,20 +81,19 @@ public class QuizResponseDto {
         private int answer;
         private String solution;
 
-        public static QuizDetailDto from(Quiz quiz) {
-            return QuizDetailDto.builder()
-                    .quizId(quiz.getId())
-                    .quizNum(quiz.getQuizNum())
-                    .category(quiz.getCategory().name())
-                    .title(quiz.getTitle())
-                    .example(quiz.getExample())
-                    .choiceFirst(quiz.getChoiceFirst())
-                    .choiceSecond(quiz.getChoiceSecond())
-                    .choiceThird(quiz.getChoiceThird())
-                    .choiceFourth(quiz.getChoiceFourth())
-                    .choiceFifth(quiz.getChoiceFifth())
-                    .build();
-        }
+    public static QuizDetailDto from(Quiz quiz) {
+        return QuizDetailDto.builder()
+                .quizId(quiz.getId())
+                .quizNum(quiz.getQuizNum())
+                .category(quiz.getCategory().name())
+                .title(quiz.getTitle())
+                .example(quiz.getExample())
+                .choiceFirst(quiz.getChoiceFirst())
+                .choiceSecond(quiz.getChoiceSecond())
+                .choiceThird(quiz.getChoiceThird())
+                .choiceFourth(quiz.getChoiceFourth())
+                .choiceFifth(quiz.getChoiceFifth())
+                .build();
     }
 
     @Getter
@@ -135,6 +150,6 @@ public class QuizResponseDto {
                     .ratioOfCorrect(ratio)
                     .build();
         }
+
     }
-    
 }
