@@ -23,4 +23,11 @@ public class QuizRequestDto {
         private int choice;
     }
 
+    @Getter
+    @Builder
+    public static class FullResultRequestDto {
+        private String category;
+        private List<SingleGradeRequestDto> gradeRequestList;
+    }
+
 }

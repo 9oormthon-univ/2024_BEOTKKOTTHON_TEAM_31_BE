@@ -1,7 +1,7 @@
 package goorm.brainsnack.quiz.service;
 
 import goorm.brainsnack.quiz.dto.QuizResponseDto;
-import goorm.brainsnack.quiz.dto.QuizResponseDto.GetTotalMemberDto;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
@@ -16,4 +16,6 @@ public interface QuizService {
     SingleGradeDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request);
 
     FullGradeDto gradeFullQuiz(Long memberId, String category, FullGradeRequestDto request);
+
+    FullResultResponseDto getFullResult(Long memberId, String category, FullResultRequestDto request);
 }

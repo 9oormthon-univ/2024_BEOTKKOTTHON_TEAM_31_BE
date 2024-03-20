@@ -136,5 +136,45 @@ public class QuizResponseDto {
                     .build();
         }
     }
-    
+
+    @Getter
+    @Builder
+    public static class FullResultResponseDto {
+       private int totalQuizNum;
+       private int wrongQuizNum;
+       private String category;
+       private List<SingleResultResponseDto> quizList;
+
+       public static FullResultResponseDto of(int totalQuizNum, int wrongQuizNum, List<MemberQuiz> memberQuizList, QuizCategory category) {
+           return FullResultResponseDto.builder()
+                   .totalQuizNum(totalQuizNum)
+                   .wrongQuizNum(wrongQuizNum)
+                   .category(category.name())
+                   .quizList(memberQuizList.stream()
+                           .map(SingleResultResponseDto::from)
+                           .toList())
+                   .build();
+       }
+    }
+
+    @Getter
+    @Builder
+    public static class SingleResultResponseDto {
+       private Long quizId;
+       private int quizNum;
+       private Boolean isCorrect;
+
+       public static SingleResultResponseDto from(MemberQuiz memberQuiz) {
+           Quiz quiz = memberQuiz.getQuiz();
+           Long quizId = quiz.getId();
+
+           return SingleResultResponseDto.builder()
+                   .quizId(quizId)
+                   .quizNum(quiz.getQuizNum())
+                   .isCorrect(memberQuiz.getIsCorrect())
+                   .build();
+       }
+    }
+
+
 }
