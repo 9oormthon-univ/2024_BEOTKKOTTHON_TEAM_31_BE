@@ -1,7 +1,7 @@
 package goorm.brainsnack.quiz.dto;
 
-import goorm.brainsnack.quiz.domain.QuizCategory;
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
 
 import java.util.List;
 
@@ -10,7 +10,7 @@ public class SimilarQuizResponseDto {
     @Builder @Getter
     public static class CreateDto {
         private int quizNum;
-        private QuizCategory category;
+        private String category;
         private Boolean isSimilar;
         private String title;
         private String example;

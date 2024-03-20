@@ -1,6 +1,5 @@
 package goorm.brainsnack.quiz.service;
 
-import goorm.brainsnack.quiz.domain.QuizCategory;
 import goorm.brainsnack.quiz.dto.ChatGPTRequestDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto;
 import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;

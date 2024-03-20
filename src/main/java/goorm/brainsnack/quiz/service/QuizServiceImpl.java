@@ -1,32 +1,31 @@
 package goorm.brainsnack.quiz.service;
 
 
-import goorm.brainsnack.exception.ErrorCode;
-import goorm.brainsnack.exception.QuizException;
-import goorm.brainsnack.quiz.domain.Quiz;
-import goorm.brainsnack.quiz.dto.QuizResponseDto;
-
-import goorm.brainsnack.quiz.domain.Quiz;
-import goorm.brainsnack.quiz.domain.QuizCategory;
-import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
 import goorm.brainsnack.exception.BaseException;
 import goorm.brainsnack.exception.ErrorCode;
+import goorm.brainsnack.exception.QuizException;
 import goorm.brainsnack.member.domain.Member;
 import goorm.brainsnack.member.repository.MemberRepository;
 import goorm.brainsnack.quiz.domain.MemberQuiz;
+import goorm.brainsnack.quiz.domain.Quiz;
+import goorm.brainsnack.quiz.domain.QuizCategory;
+import goorm.brainsnack.quiz.domain.QuizData;
 import goorm.brainsnack.quiz.dto.QuizResponseDto;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.SingleGradeDto;
 import goorm.brainsnack.quiz.repository.MemberQuizRepository;
-
+import goorm.brainsnack.quiz.repository.QuizDataRepository;
 import goorm.brainsnack.quiz.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.FullGradeRequestDto;
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.FullGradeDto;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.QuizDetailDto;
-
-
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
@@ -36,17 +35,15 @@ public class QuizServiceImpl implements QuizService {
     private final MemberRepository memberRepository;
     private final MemberQuizRepository memberQuizRepository;
     private final QuizRepository quizRepository;
-
+    private final QuizDataRepository dataRepository;
 
     @Override
-    public QuizResponseDto.QuizDto findQuiz(Long quizId) {
+    public QuizResponseDto.QuizDetailDto findQuiz(Long quizId) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new QuizException(ErrorCode.NOT_EXIST_QUIZ));
         // 여기서 DTO 로 반환해서 Controller 에게 넘겨주기
-        QuizResponseDto.QuizDto quizDto = Quiz.toQuizDto(quiz);
-        return quizDto;
+        return QuizResponseDto.QuizDetailDto.from(quiz);
     }
-
     
     @Override
     public QuizResponseDto.GetTotalMemberDto getTotalNum(Long memberId) {
@@ -76,5 +73,34 @@ public class QuizServiceImpl implements QuizService {
 //                        .toList())
                 .build();
     }
-      
+
+    @Override
+    public FullGradeDto gradeFullQuiz(Long memberId, String category, FullGradeRequestDto request) {
+        return FullGradeDto.from(request.getGradeRequestList().stream()
+                .map(r -> gradeSingleQuiz(memberId, r.getId(), r))
+                .toList());
+    }
+
+    @Transactional
+    @Override
+    public SingleGradeDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
+
+        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.of(request, member, quiz));
+
+        QuizData data = dataRepository.findByQuiz(quiz)
+                .orElse(QuizData.from(quiz));
+        data.updateQuizData(memberQuiz);
+
+        int ratio = 0;
+        if (data.getQuizParticipantsNum() != 0) {
+            ratio = data.getCorrectAnswerNum() / data.getQuizParticipantsNum();
+        }
+
+        return SingleGradeDto.of(quiz, memberQuiz, data, ratio);
+    }
+
 }
