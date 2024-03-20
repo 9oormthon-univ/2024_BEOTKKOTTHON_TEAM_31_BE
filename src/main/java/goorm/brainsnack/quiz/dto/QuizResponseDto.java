@@ -113,11 +113,11 @@ public class QuizResponseDto {
 
     @Getter
     @Builder
-    public static class FullGradeDto {
+    public static class MultiGradeDto {
         private List<SingleGradeDto> quizzes;
 
-        public static FullGradeDto from(List<SingleGradeDto> results) {
-            return FullGradeDto.builder()
+        public static MultiGradeDto from(List<SingleGradeDto> results) {
+            return MultiGradeDto.builder()
                     .quizzes(results)
                     .build();
         }
@@ -169,14 +169,14 @@ public class QuizResponseDto {
 
     @Getter
     @Builder
-    public static class FullResultResponseDto {
+    public static class MultiResultResponseDto {
        private int totalQuizCounts;
        private int wrongQuizCounts;
        private String category;
        private List<SingleResultResponseDto> results;
 
-       public static FullResultResponseDto of(int totalQuizCounts, int wrongQuizCounts, List<MemberQuiz> memberQuizzes, QuizCategory category) {
-           return FullResultResponseDto.builder()
+       public static MultiResultResponseDto of(int totalQuizCounts, int wrongQuizCounts, List<MemberQuiz> memberQuizzes, QuizCategory category) {
+           return MultiResultResponseDto.builder()
                    .totalQuizCounts(totalQuizCounts)
                    .wrongQuizCounts(wrongQuizCounts)
                    .category(category.name())

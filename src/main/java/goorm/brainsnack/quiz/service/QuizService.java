@@ -14,7 +14,7 @@ public interface QuizService {
 
     SingleGradeDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request);
 
-    FullGradeDto gradeFullQuiz(Long memberId, String category, FullGradeRequestDto request);
+    MultiGradeDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request);
 
-    FullResultResponseDto getFullResult(Long memberId, String category, FullResultRequestDto request);
+    MultiResultResponseDto getFullResult(Long memberId, String category, MultiGradeRequestDto request);
 }

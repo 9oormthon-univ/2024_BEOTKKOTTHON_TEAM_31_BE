@@ -72,8 +72,8 @@ public class QuizServiceImpl implements QuizService {
 
     @Transactional
     @Override
-    public FullGradeDto gradeFullQuiz(Long memberId, String category, FullGradeRequestDto request) {
-        return FullGradeDto.from(request.getGradeRequestList().stream()
+    public MultiGradeDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request) {
+        return MultiGradeDto.from(request.getGradeRequests().stream()
                 .map(r -> gradeSingleQuiz(memberId, r.getQuizId(), r))
                 .toList());
     }
@@ -86,26 +86,21 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
 
-        if (memberQuizRepository.findByMemberAndQuiz(member, quiz).isPresent()) {
-            throw new BaseException(ErrorCode.ALREADY_FINISH_QUIZ);
-        }
-
-        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.of(request, member, quiz));
+        Optional<MemberQuiz> optionalMemberQuiz = memberQuizRepository.findByMemberAndQuiz(member, quiz);
         Optional<QuizData> optionalQuizData = dataRepository.findByQuiz(quiz);
-        QuizData data = optionalQuizData.orElseGet(() -> dataRepository.save(QuizData.from(quiz)));
+
+        MemberQuiz memberQuiz = optionalMemberQuiz
+                .orElseGet(() -> memberQuizRepository.save(MemberQuiz.of(request, member, quiz)));
+        QuizData data = optionalQuizData
+                .orElseGet(() -> dataRepository.save(QuizData.from(quiz)));
+
         data.updateQuizData(memberQuiz);
 
-        int ratio = 0;
-        if (data.getQuizParticipantsCounts() != 0) {
-            ratio = data.getCorrectAnswerCounts() / data.getQuizParticipantsCounts();
-        }
-
-        return SingleGradeDto.of(quiz, memberQuiz, data, ratio);
+        return SingleGradeDto.of(quiz, memberQuiz, data, getRatio(data));
     }
 
-
     @Override
-    public FullResultResponseDto getFullResult(Long memberId, String categoryInput, FullResultRequestDto request) {
+    public MultiResultResponseDto getFullResult(Long memberId, String categoryInput, MultiGradeRequestDto request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
         List<MemberQuiz> memberQuizList = memberQuizRepository.findAllByMemberQuizAndCategory(member, QuizCategory.getInstance(categoryInput));
@@ -114,7 +109,16 @@ public class QuizServiceImpl implements QuizService {
         int totalQuizNum = quizRepository.findAllByCategoryAndIsSimilar(category, false).size();
         int wrongQuizNum = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
 
-        return FullResultResponseDto.of(totalQuizNum, wrongQuizNum, memberQuizList, category);
+        return MultiResultResponseDto.of(totalQuizNum, wrongQuizNum, memberQuizList, category);
+    }
+
+
+    private int getRatio(QuizData data) {
+        int ratio = 0;
+        if (data.getQuizParticipantsCounts() != 0) {
+            ratio = data.getCorrectAnswerCounts() / data.getQuizParticipantsCounts();
+        }
+        return ratio;
     }
 
 }
