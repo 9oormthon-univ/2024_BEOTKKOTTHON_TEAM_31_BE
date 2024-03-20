@@ -21,7 +21,8 @@ public class MemberResponseDto {
     }
 
     @Getter @Builder
-    public static class GetMemberDto {
+    public static class MemberDto {
         private Long id;
+        private String entryCode;
     }
 }

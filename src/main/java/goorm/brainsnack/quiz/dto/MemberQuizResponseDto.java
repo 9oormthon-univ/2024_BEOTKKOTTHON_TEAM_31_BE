@@ -6,15 +6,17 @@ import goorm.brainsnack.quiz.domain.Quiz;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.annotations.GenericGenerator;
+
+import java.util.List;
 
 public class MemberQuizResponseDto {
 
 
     @Getter @Builder
-
     public static class MemberQuizDto {
         private int quizNum;
-        private String solution;
-        // 풀었던 유사 문제도 있어야 함
+        private Long quizId;
     }
+
 }

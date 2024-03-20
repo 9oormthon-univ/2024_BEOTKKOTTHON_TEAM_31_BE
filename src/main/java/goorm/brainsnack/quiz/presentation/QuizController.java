@@ -40,6 +40,7 @@ public class QuizController {
     private static final String COMMENT_NO_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
             "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
 
+    // 유사 문제 풀기
     @GetMapping("/quiz/{quizId}/similar-quiz")
     public ResponseEntity<BaseResponse<SimilarQuizResponseDto.CreateDto>> createSimilarQuiz(@PathVariable Long quizId) {
 
@@ -47,13 +48,13 @@ public class QuizController {
         QuizResponseDto.QuizDto quizDto = quizService.findQuiz(quizId);
         String content = createQuizTitle(quizDto);
 
-        // 2. 1번에서 찾은 문제를 가지고 GPT 에 넘길 Dto 생성
+        // 2. 1번에서 만든 content(문제)를 가지고 GPT 에 넘길 Dto 생성
         List<ChatGPTRequestDto.ChatRequestMsgDto> message = new ArrayList<>();
         message.add(new ChatGPTRequestDto.ChatRequestMsgDto("system" , content));
         ChatGPTRequestDto.ChatCompletionDto chatCompletionDto = new ChatGPTRequestDto.ChatCompletionDto("gpt-3.5-turbo-16k" , message);
 
         // 3. GPT API 에 전달 후 result 로 받기
-        SimilarQuizResponseDto.CreateDto result = chatGPTService.prompt(chatCompletionDto, quizDto.getCategory());
+        SimilarQuizResponseDto.CreateDto result = chatGPTService.prompt(chatCompletionDto,quizDto);
         return ResponseEntity.ok(new BaseResponse<>(result));
     }
     private static String createQuizTitle(QuizResponseDto.QuizDto quizDto) {

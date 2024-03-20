@@ -31,6 +31,7 @@ public class QuizResponseDto {
         private String choiceFifth;
         private int answer;
         private String solution;
+        private int quizNum;
     }
 
     @Getter

@@ -4,11 +4,14 @@ import goorm.brainsnack.global.BaseEntity;
 import goorm.brainsnack.member.domain.Member;
 import goorm.brainsnack.member.dto.MemberResponseDto;
 import goorm.brainsnack.quiz.dto.MemberQuizResponseDto;
+import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Getter
 @Entity
@@ -34,10 +37,24 @@ public class MemberQuiz extends BaseEntity {
     public static MemberQuizResponseDto.MemberQuizDto getMemberQuizDto(MemberQuiz memberQuiz) {
         return MemberQuizResponseDto.MemberQuizDto.builder()
                 .quizNum(memberQuiz.getQuiz().getQuizNum())
-                .solution(memberQuiz.getQuiz().getSolution())
+                .quizId(memberQuiz.getQuiz().getId())
                 .build();
     }
 
+    public static MemberQuizResponseDto.MemberQuizDto getMemberSimilarQuizDto(MemberQuiz memberQuiz , int count) {
+        return MemberQuizResponseDto.MemberQuizDto.builder()
+                .quizNum(count)
+                .quizId(memberQuiz.getQuiz().getId())
+                .build();
+    }
 
-
+    public static SimilarQuizResponseDto.MemberSimilarQuizDto getMemberSimilarQuizListDto(MemberResponseDto.MemberDto member ,
+                                                                                          List<MemberQuizResponseDto.MemberQuizDto> result) {
+        return SimilarQuizResponseDto.MemberSimilarQuizDto.builder()
+                .memberId(member.getId())
+                .entryCode(member.getEntryCode())
+                .createSimilarQuizCount(result.size())
+                .memberQuizList(result)
+                .build();
+    }
 }
