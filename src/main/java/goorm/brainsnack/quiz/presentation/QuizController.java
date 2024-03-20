@@ -88,7 +88,7 @@ public class QuizController {
     }
 
     //전체 문제 채점
-    @PostMapping("/members/{member-id}/quiz/{category}/grade")
+    @PostMapping("/members/{member-id}/quizzes/{category}/grade")
     public ResponseEntity<BaseResponse<FullGradeDto>> gradeFullQuiz(@PathVariable("member-id") Long memberId,
                                                                     @PathVariable("category") String category,
                                                                     @RequestBody FullGradeRequestDto request) {

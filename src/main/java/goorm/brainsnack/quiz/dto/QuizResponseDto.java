@@ -38,17 +38,47 @@ public class QuizResponseDto {
     @Builder
     public static class CategoryQuizListDto {
         private int size;
-        private List<QuizDetailDto> quizDetailDtoList;
+        private List<SingleQuizDto> quizList;
 
-        public static CategoryQuizListDto of(int quizSize, List<QuizDetailDto> quizDetailDtoList) {
+        public static CategoryQuizListDto of(int quizSize, List<SingleQuizDto> quizDtoList) {
             return CategoryQuizListDto.builder()
-                    .size(quizSize)
-                    .quizDetailDtoList(quizDetailDtoList)
+                    .quizList(quizDtoList)
                     .build();
         }
     }
 
-    //풀이용 문제 조회 dto
+    //문제 조회 dto
+    @Getter
+    @Builder
+    public static class SingleQuizDto {
+        private Long quizId;
+        private int quizNum;
+        private String category;
+        private String title;
+        private String example;
+        private String choiceFirst;
+        private String choiceSecond;
+        private String choiceThird;
+        private String choiceFourth;
+        private String choiceFifth;
+
+        public static SingleQuizDto from(Quiz quiz) {
+            return SingleQuizDto.builder()
+                    .quizId(quiz.getId())
+                    .quizNum(quiz.getQuizNum())
+                    .category(quiz.getCategory().name())
+                    .title(quiz.getTitle())
+                    .example(quiz.getExample())
+                    .choiceFirst(quiz.getChoiceFirst())
+                    .choiceSecond(quiz.getChoiceSecond())
+                    .choiceThird(quiz.getChoiceThird())
+                    .choiceFourth(quiz.getChoiceFourth())
+                    .choiceFifth(quiz.getChoiceFifth())
+                    .build();
+        }
+    }
+
+    //문제 전체 내용 조회 dto
     @Getter
     @Builder
     public static class QuizDetailDto {

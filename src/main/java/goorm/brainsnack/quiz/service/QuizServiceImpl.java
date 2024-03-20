@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
@@ -59,12 +60,12 @@ public class QuizServiceImpl implements QuizService {
     public CategoryQuizListDto getCategoryQuizList(String categoryName) {
         QuizCategory category = QuizCategory.getInstance(categoryName);
 
-        List<Quiz> quizList = quizRepository.findAllByCategory(category);
+        List<Quiz> quizList = quizRepository.findAllByCategoryAndIsSimilar(category, false);
 
         return CategoryQuizListDto.builder()
                 .size(quizList.size())
-                .quizDetailDtoList(quizList.stream()
-                        .map(QuizDetailDto::from)
+                .quizList(quizList.stream()
+                        .map(SingleQuizDto::from)
                         .toList())
                 .build();
     }
@@ -73,7 +74,7 @@ public class QuizServiceImpl implements QuizService {
     @Override
     public FullGradeDto gradeFullQuiz(Long memberId, String category, FullGradeRequestDto request) {
         return FullGradeDto.from(request.getGradeRequestList().stream()
-                .map(r -> gradeSingleQuiz(memberId, r.getId(), r))
+                .map(r -> gradeSingleQuiz(memberId, r.getQuizId(), r))
                 .toList());
     }
 
@@ -85,10 +86,13 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
 
-        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.of(request, member, quiz));
+        if (memberQuizRepository.findByMemberAndQuiz(member, quiz).isPresent()) {
+            throw new BaseException(ErrorCode.ALREADY_FINISH_QUIZ);
+        }
 
-        QuizData data = dataRepository.findByQuiz(quiz)
-                .orElse(QuizData.from(quiz));
+        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.of(request, member, quiz));
+        Optional<QuizData> optionalQuizData = dataRepository.findByQuiz(quiz);
+        QuizData data = optionalQuizData.orElseGet(() -> dataRepository.save(QuizData.from(quiz)));
         data.updateQuizData(memberQuiz);
 
         int ratio = 0;
@@ -107,8 +111,8 @@ public class QuizServiceImpl implements QuizService {
         List<MemberQuiz> memberQuizList = memberQuizRepository.findAllByMemberQuizAndCategory(member, QuizCategory.getInstance(categoryInput));
         QuizCategory category = QuizCategory.getInstance(categoryInput);
 
-        int totalQuizNum = quizRepository.findAllByCategory(category).size();
-        int wrongQuizNum = memberQuizRepository.findAllByMemberAndIsCorrectAndCategory(member, false, category).size();
+        int totalQuizNum = quizRepository.findAllByCategoryAndIsSimilar(category, false).size();
+        int wrongQuizNum = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
 
         return FullResultResponseDto.of(totalQuizNum, wrongQuizNum, memberQuizList, category);
     }
