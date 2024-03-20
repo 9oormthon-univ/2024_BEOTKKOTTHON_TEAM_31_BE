@@ -1,8 +1,9 @@
 package goorm.brainsnack.quiz.service;
 
-import org.springframework.stereotype.Service;
+import goorm.brainsnack.quiz.dto.ChatGPTRequestDto;
+import goorm.brainsnack.quiz.dto.QuizResponseDto;
+import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 
-@Service
-public class ChatGPTService {
-
+public interface ChatGPTService {
+    SimilarQuizResponseDto.CreateDto prompt(ChatGPTRequestDto.ChatCompletionDto chatCompletionDto , QuizResponseDto.QuizDto quizDto);
 }

@@ -11,20 +11,24 @@ public enum ErrorCode {
     /**
      * 성공 코드
      * */
-    SUCCESS(HttpStatus.OK, "success", "요청에 성공했습니다."),
-    CREATED(HttpStatus.CREATED, "created", "요청에 성공했으며 리소스가 정상적으로 생성되었습니다."),
-    ACCEPTED(HttpStatus.ACCEPTED, "accepted", "요청에 성공했으나 처리가 완료되지 않았습니다."),
+    SUCCESS(HttpStatus.OK, "success", "요청에 성공했습니다"),
+    CREATED(HttpStatus.CREATED, "created", "요청에 성공했으며 리소스가 정상적으로 생성되었습니다"),
+    ACCEPTED(HttpStatus.ACCEPTED, "accepted", "요청에 성공했으나 처리가 완료되지 않았습니다"),
 
 
     /**
      * 멤버 에러
      */
-
+    NOT_EXIST_USER(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 유저입니다."),
+    ALREADY_EXIST_MEMBER(HttpStatus.CONFLICT, "M002", "이미 존재하는 유저입니다."),
 
 
     /**
      * 문제 에러
      */
+    NOT_EXIST_QUIZ(HttpStatus.NOT_FOUND, "Q001", "존재하지 않는 퀴즈입니다"),
+    ALREADY_FINISH_QUIZ(HttpStatus.CONFLICT, "Q002", "이미 풀이한 퀴즈입니다"),
+    NOT_EXIST_CATEGORY(HttpStatus.NOT_FOUND, "Q010", "존재하지 않는 카테고리입니다"),
 
 
     /**
