@@ -12,30 +12,30 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class QuizData extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "quizData_id")
     private Long id;
 
     @OneToOne
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
-    private int quizParticipantsNum;
-    private int correctAnswerNum;
+    private int quizParticipantsCounts;
+    private int correctAnswerCounts;
 
     //생성 메서드
     public static QuizData from(Quiz quiz) {
         return QuizData.builder()
                 .quiz(quiz)
-                .quizParticipantsNum(0)
-                .correctAnswerNum(0)
+                .quizParticipantsCounts(0)
+                .correctAnswerCounts(0)
                 .build();
     }
 
     //비즈니스 메서드
     public void updateQuizData(MemberQuiz memberQuiz) {
         if (memberQuiz.getIsCorrect()) {
-            this.correctAnswerNum++;
+            this.correctAnswerCounts++;
         }
-        this.quizParticipantsNum++;
+        this.quizParticipantsCounts++;
     }
 }

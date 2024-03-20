@@ -10,9 +10,6 @@ import goorm.brainsnack.quiz.domain.MemberQuiz;
 import goorm.brainsnack.quiz.domain.Quiz;
 import goorm.brainsnack.quiz.domain.QuizCategory;
 import goorm.brainsnack.quiz.domain.QuizData;
-import goorm.brainsnack.quiz.dto.QuizResponseDto;
-import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
-import goorm.brainsnack.quiz.dto.QuizResponseDto.SingleGradeDto;
 import goorm.brainsnack.quiz.repository.MemberQuizRepository;
 import goorm.brainsnack.quiz.repository.QuizDataRepository;
 import goorm.brainsnack.quiz.repository.QuizRepository;
@@ -21,11 +18,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
-import static goorm.brainsnack.quiz.dto.QuizRequestDto.FullGradeRequestDto;
-import static goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
-import static goorm.brainsnack.quiz.dto.QuizResponseDto.FullGradeDto;
-import static goorm.brainsnack.quiz.dto.QuizResponseDto.QuizDetailDto;
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -38,46 +34,47 @@ public class QuizServiceImpl implements QuizService {
     private final QuizDataRepository dataRepository;
 
     @Override
-    public QuizResponseDto.QuizDetailDto findQuiz(Long quizId) {
+    public QuizDetailDto findQuiz(Long quizId) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new QuizException(ErrorCode.NOT_EXIST_QUIZ));
         // 여기서 DTO 로 반환해서 Controller 에게 넘겨주기
-        return QuizResponseDto.QuizDetailDto.from(quiz);
+        return QuizDetailDto.from(quiz);
     }
     
     @Override
-    public QuizResponseDto.GetTotalMemberDto getTotalNum(Long memberId) {
+    public GetTotalMemberDto getTotalNum(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
         List<MemberQuiz> members = memberQuizRepository.findAllByMember(member);
 
         // 풀었던 퀴즈가 없는 경우
         if (members.isEmpty()) {
-            return QuizResponseDto.GetTotalMemberDto.from(0);
+            return GetTotalMemberDto.from(0);
         }
 
         int totalQuizNum = memberQuizRepository.findAllByMember(member).size();
-        return QuizResponseDto.GetTotalMemberDto.from(totalQuizNum);
+        return GetTotalMemberDto.from(totalQuizNum);
     }
 
     @Override
-    public CategoryQuizListDto getCategoryQuizList(String categoryName) {
+    public CategoryQuizListDto getCategoryQuizzes(String categoryName) {
         QuizCategory category = QuizCategory.getInstance(categoryName);
 
-        List<Quiz> quizList = quizRepository.findAllByCategory(category);
+        List<Quiz> quizzes = quizRepository.findAllByCategoryAndIsSimilar(category, false);
 
         return CategoryQuizListDto.builder()
-                .size(quizList.size())
-//                .quizDetailDtoList(quizList.stream()
-//                        .map(QuizDetailDto::from)
-//                        .toList())
+                .size(quizzes.size())
+                .quizzes(quizzes.stream()
+                        .map(SingleQuizDto::from)
+                        .toList())
                 .build();
     }
 
+    @Transactional
     @Override
-    public FullGradeDto gradeFullQuiz(Long memberId, String category, FullGradeRequestDto request) {
-        return FullGradeDto.from(request.getGradeRequestList().stream()
-                .map(r -> gradeSingleQuiz(memberId, r.getId(), r))
+    public MultiGradeDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request) {
+        return MultiGradeDto.from(request.getGradeRequests().stream()
+                .map(r -> gradeSingleQuiz(memberId, r.getQuizId(), r))
                 .toList());
     }
 
@@ -89,18 +86,39 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
 
-        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.of(request, member, quiz));
+        Optional<MemberQuiz> optionalMemberQuiz = memberQuizRepository.findByMemberAndQuiz(member, quiz);
+        Optional<QuizData> optionalQuizData = dataRepository.findByQuiz(quiz);
 
-        QuizData data = dataRepository.findByQuiz(quiz)
-                .orElse(QuizData.from(quiz));
+        MemberQuiz memberQuiz = optionalMemberQuiz
+                .orElseGet(() -> memberQuizRepository.save(MemberQuiz.of(request, member, quiz)));
+        QuizData data = optionalQuizData
+                .orElseGet(() -> dataRepository.save(QuizData.from(quiz)));
+
         data.updateQuizData(memberQuiz);
 
-        int ratio = 0;
-        if (data.getQuizParticipantsNum() != 0) {
-            ratio = data.getCorrectAnswerNum() / data.getQuizParticipantsNum();
-        }
+        return SingleGradeDto.of(quiz, memberQuiz, data, getRatio(data));
+    }
 
-        return SingleGradeDto.of(quiz, memberQuiz, data, ratio);
+    @Override
+    public MultiResultResponseDto getFullResult(Long memberId, String categoryInput) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
+        List<MemberQuiz> memberQuizList = memberQuizRepository.findAllByMemberAndCategory(member, QuizCategory.getInstance(categoryInput));
+        QuizCategory category = QuizCategory.getInstance(categoryInput);
+
+        int totalQuizNum = quizRepository.findAllByCategoryAndIsSimilar(category, false).size();
+        int wrongQuizNum = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
+
+        return MultiResultResponseDto.of(totalQuizNum, wrongQuizNum, memberQuizList, category);
+    }
+
+
+    private int getRatio(QuizData data) {
+        int ratio = 0;
+        if (data.getQuizParticipantsCounts() != 0) {
+            ratio = data.getCorrectAnswerCounts() / data.getQuizParticipantsCounts();
+        }
+        return ratio;
     }
 
 }

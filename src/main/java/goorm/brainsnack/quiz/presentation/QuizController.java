@@ -3,10 +3,9 @@ package goorm.brainsnack.quiz.presentation;
 import goorm.brainsnack.global.BaseResponse;
 import goorm.brainsnack.quiz.dto.ChatGPTRequestDto;
 import goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
-import goorm.brainsnack.quiz.dto.QuizResponseDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
-import goorm.brainsnack.quiz.dto.QuizResponseDto.FullGradeDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.GetTotalMemberDto;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.MultiGradeDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.SingleGradeDto;
 import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 import goorm.brainsnack.quiz.service.ChatGPTService;
@@ -19,7 +18,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static goorm.brainsnack.quiz.dto.QuizRequestDto.FullGradeRequestDto;
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.MultiGradeRequestDto;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.MultiResultResponseDto;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.QuizDetailDto;
 
 @Slf4j
 @RestController
@@ -40,7 +41,7 @@ public class QuizController {
     public ResponseEntity<BaseResponse<SimilarQuizResponseDto.CreateDto>> createSimilarQuiz(@PathVariable Long quizId) {
 
         // 1. 문제 가져오고 GPT 에게 넘길 content 만들기
-        QuizResponseDto.QuizDetailDto quizDto = quizService.findQuiz(quizId);
+        QuizDetailDto quizDto = quizService.findQuiz(quizId);
         String content = createQuizTitle(quizDto);
 
         // 2. 1번에서 만든 content(문제)를 가지고 GPT 에 넘길 Dto 생성
@@ -52,7 +53,7 @@ public class QuizController {
         SimilarQuizResponseDto.CreateDto result = chatGPTService.prompt(chatCompletionDto,quizDto);
         return ResponseEntity.ok(new BaseResponse<>(result));
     }
-    private static String createQuizTitle(QuizResponseDto.QuizDetailDto quizDto) {
+    private static String createQuizTitle(QuizDetailDto quizDto) {
         String content;
         if (quizDto.getExample().equals("X")) {
             content = "문제 : " + quizDto.getTitle() + "\n" + "1번 : " + quizDto.getChoiceFirst() + "\n" +
@@ -66,16 +67,19 @@ public class QuizController {
         return content;
     }
 
+    //영역별 모든 문제 조회
     @GetMapping("/quiz/{category}")
-    public ResponseEntity<BaseResponse<CategoryQuizListDto>> getCategoryQuizList(@PathVariable String category) {
-        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getCategoryQuizList(category)));
+    public ResponseEntity<BaseResponse<CategoryQuizListDto>> getCategoryQuizzes(@PathVariable String category) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getCategoryQuizzes(category)));
     }
 
+    //총 풀이 문제 조회
     @GetMapping("/members/{member-id}")
     public ResponseEntity<BaseResponse<GetTotalMemberDto>> getTotalMember(@PathVariable("member-id") Long memberId) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.getTotalNum(memberId)));
     }
 
+    //한 문제 채점
     @PostMapping("/members/{member-id}/quiz/{quiz-id}/grade")
     public ResponseEntity<BaseResponse<SingleGradeDto>> gradeSingleQuiz(@PathVariable("member-id") Long memberId,
                                                                         @PathVariable("quiz-id") Long quizId,
@@ -83,12 +87,18 @@ public class QuizController {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeSingleQuiz(memberId, quizId, request)));
     }
 
-    @PostMapping("/members/{member-id}/quiz/{category}/grade")
-    public ResponseEntity<BaseResponse<FullGradeDto>> gradeFullQuiz(@PathVariable("member-id") Long memberId,
+    //여러 문제 채점
+    @PostMapping("/members/{member-id}/quizzes/{category}/grade")
+    public ResponseEntity<BaseResponse<MultiGradeDto>> gradeQuizzes(@PathVariable("member-id") Long memberId,
                                                                     @PathVariable("category") String category,
-                                                                    @RequestBody FullGradeRequestDto request) {
-        return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeFullQuiz(memberId, category, request)));
+                                                                    @RequestBody MultiGradeRequestDto request) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeMultiQuiz(memberId, category, request)));
     }
 
-
+    //전체 문제 채점 결과 리스트 조회
+    @GetMapping("/members/{member-id}/quiz/{category}/grade")
+    public ResponseEntity<BaseResponse<MultiResultResponseDto>> getFullQuizResult(@PathVariable("member-id") Long memberId,
+                                                                                  @PathVariable("category") String category) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getFullResult(memberId, category)));
+    }
 }

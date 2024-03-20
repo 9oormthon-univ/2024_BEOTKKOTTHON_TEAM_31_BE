@@ -15,7 +15,7 @@ import static jakarta.persistence.EnumType.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Quiz extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "quiz_id")
     private Long id;
     private int quizNum;

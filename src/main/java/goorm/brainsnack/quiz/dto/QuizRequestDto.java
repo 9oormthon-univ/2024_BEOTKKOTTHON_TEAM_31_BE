@@ -9,15 +9,15 @@ public class QuizRequestDto {
 
     @Getter
     @Builder
-    public static class FullGradeRequestDto {
-        private List<SingleGradeRequestDto> gradeRequestList;
+    public static class MultiGradeRequestDto {
+        private String category;
+        private List<SingleGradeRequestDto> gradeRequests;
     }
 
     @Getter
     @Builder
     public static class SingleGradeRequestDto {
-        private Long id;
-        private int quizNum;
+        private Long quizId;
         private String category;
         private Boolean isSimilar;
         private int choice;
