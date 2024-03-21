@@ -31,7 +31,7 @@ public class QuizResponseDto {
 
         @Getter
         @Builder
-        public static class quizDetailDto {
+        public static class QuizSimpleDto {
             private String title;
             private QuizCategory category;
         }
