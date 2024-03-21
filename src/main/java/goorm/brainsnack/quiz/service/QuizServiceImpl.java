@@ -17,10 +17,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.MultiGradeRequestDto;
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 
 @Service
@@ -73,9 +75,14 @@ public class QuizServiceImpl implements QuizService {
     @Transactional
     @Override
     public MultiGradeDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request) {
-        return MultiGradeDto.from(request.getGradeRequests().stream()
-                .map(r -> gradeSingleQuiz(memberId, r.getQuizId(), r))
-                .toList());
+        List<SingleGradeDto> results = new ArrayList<>();
+        for (SingleGradeRequestDto gradeRequest : request.getGradeRequests()) {
+            if (!gradeRequest.getCategory().equals(category)) {
+                throw new BaseException(ErrorCode.CATEGORY_CONFLICT);
+            }
+            results.add(gradeSingleQuiz(memberId, gradeRequest.getQuizId(), gradeRequest));
+        }
+        return MultiGradeDto.from(results);
     }
 
     @Transactional
@@ -86,11 +93,18 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
 
+        if (quiz.getCategory() != QuizCategory.getInstance(request.getCategory())) {
+            throw new BaseException(ErrorCode.CATEGORY_CONFLICT);
+        }
+
         Optional<MemberQuiz> optionalMemberQuiz = memberQuizRepository.findByMemberAndQuiz(member, quiz);
         Optional<QuizData> optionalQuizData = dataRepository.findByQuiz(quiz);
 
-        MemberQuiz memberQuiz = optionalMemberQuiz
-                .orElseGet(() -> memberQuizRepository.save(MemberQuiz.of(request, member, quiz)));
+        if (optionalMemberQuiz.isPresent()) {
+            throw new BaseException(ErrorCode.ALREADY_FINISH_QUIZ);
+        }
+
+        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.of(request, member, quiz));
         QuizData data = optionalQuizData
                 .orElseGet(() -> dataRepository.save(QuizData.from(quiz)));
 
@@ -103,13 +117,13 @@ public class QuizServiceImpl implements QuizService {
     public MultiResultResponseDto getFullResult(Long memberId, String categoryInput) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
-        List<MemberQuiz> memberQuizList = memberQuizRepository.findAllByMemberAndCategory(member, QuizCategory.getInstance(categoryInput));
+        List<MemberQuiz> memberQuizzes = memberQuizRepository.findAllByMemberAndCategory(member, QuizCategory.getInstance(categoryInput));
         QuizCategory category = QuizCategory.getInstance(categoryInput);
 
-        int totalQuizNum = quizRepository.findAllByCategoryAndIsSimilar(category, false).size();
-        int wrongQuizNum = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
+        int totalQuizCounts = quizRepository.findAllByCategoryAndIsSimilar(category, false).size();
+        int wrongQuizCounts = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
 
-        return MultiResultResponseDto.of(totalQuizNum, wrongQuizNum, memberQuizList, category);
+        return MultiResultResponseDto.of(totalQuizCounts, wrongQuizCounts, memberQuizzes, category);
     }
 
 
