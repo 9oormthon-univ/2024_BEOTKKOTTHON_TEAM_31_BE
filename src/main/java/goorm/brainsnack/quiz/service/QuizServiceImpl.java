@@ -21,7 +21,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.MultiGradeRequestDto;
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 
 @Service
@@ -99,8 +100,11 @@ public class QuizServiceImpl implements QuizService {
         Optional<MemberQuiz> optionalMemberQuiz = memberQuizRepository.findByMemberAndQuiz(member, quiz);
         Optional<QuizData> optionalQuizData = dataRepository.findByQuiz(quiz);
 
-        MemberQuiz memberQuiz = optionalMemberQuiz
-                .orElseGet(() -> memberQuizRepository.save(MemberQuiz.of(request, member, quiz)));
+        if (optionalMemberQuiz.isPresent()) {
+            throw new BaseException(ErrorCode.ALREADY_FINISH_QUIZ);
+        }
+
+        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.of(request, member, quiz));
         QuizData data = optionalQuizData
                 .orElseGet(() -> dataRepository.save(QuizData.from(quiz)));
 
