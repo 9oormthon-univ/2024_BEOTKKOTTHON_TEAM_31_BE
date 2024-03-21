@@ -4,6 +4,7 @@ import goorm.brainsnack.member.service.MemberService;
 import goorm.brainsnack.quiz.dto.MemberQuizResponseDto;
 import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
@@ -44,8 +45,17 @@ public class MemberController {
     public ResponseEntity<BaseResponse<SimilarQuizResponseDto.MemberSimilarQuizDto>> getSimilarQuizList(@PathVariable Long memberId,
                                                                                                         @PathVariable Long quizId,
                                                                                                         @PathVariable String category) {
-        // Category 가 필요하지 않을수도 -> quizId 로도 category 를 알 수 있기 때문?
-        SimilarQuizResponseDto.MemberSimilarQuizDto result = memberService.getSimilarQuiz(memberId, quizId, category);
+        SimilarQuizResponseDto.MemberSimilarQuizDto result = memberService.getSimilarQuiz(memberId,category,quizId);
         return ResponseEntity.ok().body(new BaseResponse<>(result));
     }
+
+    // 내가 생성한 유사 문제 조회 (quizId 를 받는게 아닌 quizNum 을 받을때)
+    @GetMapping("/members/{memberId}/similar-quiz/{quizNum}/{category}")
+    public ResponseEntity<BaseResponse<SimilarQuizResponseDto.MemberSimilarQuizDto>> getSimilarQuizListNoQuizId(@PathVariable Long memberId,
+                                                                                                        @PathVariable int quizNum,
+                                                                                                        @PathVariable String category) {
+        SimilarQuizResponseDto.MemberSimilarQuizDto result = memberService.getSimilarQuizNoQuizId(memberId,category,quizNum);
+        return ResponseEntity.ok().body(new BaseResponse<>(result));
+    }
+
 }

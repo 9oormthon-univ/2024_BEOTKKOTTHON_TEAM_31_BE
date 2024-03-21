@@ -19,4 +19,10 @@ public class MemberQuizResponseDto {
         private Long quizId;
     }
 
+    @Getter @Builder
+    public static class MemberQuizWithIsCorrectDto {
+        private int quizNum;
+        private Long quizId;
+        private Boolean isCorrect;
+    }
 }

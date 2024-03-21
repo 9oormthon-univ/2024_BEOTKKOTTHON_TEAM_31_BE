@@ -4,6 +4,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import goorm.brainsnack.exception.BaseException;
+import goorm.brainsnack.exception.ErrorCode;
 import goorm.brainsnack.global.config.ChatGPTConfig;
 import goorm.brainsnack.quiz.domain.QuizCategory;
 import goorm.brainsnack.quiz.dto.ChatGPTRequestDto;
@@ -53,16 +55,35 @@ public class ChatGPTServiceImpl implements ChatGPTService {
 
         // GPT 로부터 넘어온 응답값 중에서 만들어준 유사 문제만 추출
         String[] split = extractGPTMessage(resultMap);
-
         for (String s : split) {
             System.out.println(s);
             System.out.println("***");
         }
 
         SimilarQuizResponseDto.CreateDto similarQuiz = createSimilarQuiz(quizDto, split);
+
+        // similarQuiz 가 제대로 생성됐는지 확인하는 로직
+        if (SimilarQuizFieldCheck(similarQuiz)) {
+            throw new BaseException(ErrorCode.CREATE_QUIZ_BAD_REQUEST);
+        }
         return similarQuiz;
     }
 
+
+    /**
+     * 문제가 정상적으로 동작하는지 확인하는 로직을 보완해야할 필요가 있을 것 같음.
+     */
+    private static boolean SimilarQuizFieldCheck(SimilarQuizResponseDto.CreateDto similarQuiz) {
+        // example , 5번이 없는 경우는 일단 보류
+        boolean hasEmptyField =
+                similarQuiz.getTitle() == null || similarQuiz.getTitle().isEmpty() ||
+                        similarQuiz.getChoiceFirst() == null || similarQuiz.getChoiceFirst().isEmpty() ||
+                        similarQuiz.getChoiceSecond() == null || similarQuiz.getChoiceSecond().isEmpty() ||
+                        similarQuiz.getChoiceThird() == null || similarQuiz.getChoiceThird().isEmpty() ||
+                        similarQuiz.getChoiceFourth() == null || similarQuiz.getChoiceFourth().isEmpty() ||
+                        similarQuiz.getSolution() == null || similarQuiz.getSolution().isEmpty();
+        return hasEmptyField;
+    }
 
     private static String[] extractGPTMessage(Map<String, Object> resultMap) {
         ArrayList<Object> choices = (ArrayList<Object>) resultMap.get("choices");
@@ -100,18 +121,19 @@ public class ChatGPTServiceImpl implements ChatGPTService {
             else if (key.equals("예시")) {
                 example = value;
             }
-            else if(key.contains("1")) {
+            else if(key.contains("1") || key.contains("1번")) {
                 choiceFirst = value;
-            } else if(key.contains("2")) {
+            } else if(key.contains("2") || key.contains("2번")) {
                 choiceSecond = value;
-            } else if(key.contains("3")) {
+            } else if(key.contains("3") || key.contains("3번")) {
                 choiceThird = value;
-            } else if(key.contains("4")) {
+            } else if(key.contains("4") || key.contains("4번")) {
                 choiceFourth = value;
-            } else if(key.contains("5")) {
+            } else if(key.contains("5") || key.contains("5번")) {
                 choiceFifth = value;
             } else if(key.equals("정답")) {
-                answer = Integer.parseInt(value);
+                // 정답이 1번 , 2번 처럼 나오는 경우 예외 처리
+                answer = Integer.parseInt(value.replaceAll("[^0-9]", ""));
             } else if(key.equals("해설")) {
                 solution = value;
             }

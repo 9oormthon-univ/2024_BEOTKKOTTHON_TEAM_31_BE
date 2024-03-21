@@ -14,12 +14,10 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, Long> {
     Optional<Member> findByTemporaryId(String temporaryId);
 
-
-    // 우선 묵시전 조인을 사용했고 명시적 조인으로 바꿔야한다면 바꿀 예정
-    @Query("select mq from MemberQuiz mq where mq.member.id = :memberId and mq.quiz.category = :category")
+    @Query("select mq from MemberQuiz mq join mq.quiz q where mq.member.id = :memberId and q.category = :category")
     List<MemberQuiz> findMemberQuizList(@Param("memberId") Long memberId , @Param("category") QuizCategory category);
 
-    @Query("select mq from MemberQuiz mq where mq.member.id = :memberId " +
-            "and mq.quiz.id = :quizId and mq.quiz.isSimilar=TRUE and mq.quiz.category = :category")
-    List<MemberQuiz> findMemberSimilarQuiz(@Param(("memberId")) Long memberId , @Param("quizId") Long quizId , @Param("category") QuizCategory category);
+
+    @Query("select mq from MemberQuiz mq join mq.quiz q where mq.member.id = :memberId and q.isSimilar = TRUE and q.category = :category and mq.basedQuizId= :quizId")
+    List<MemberQuiz> findMemberSimilarQuiz(@Param(("memberId")) Long memberId , @Param("category") QuizCategory category , @Param("quizId") Long quizId);
 }

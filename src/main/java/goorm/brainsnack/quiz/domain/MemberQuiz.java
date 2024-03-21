@@ -3,12 +3,11 @@ package goorm.brainsnack.quiz.domain;
 import goorm.brainsnack.global.BaseEntity;
 import goorm.brainsnack.member.domain.Member;
 import goorm.brainsnack.member.dto.MemberResponseDto;
-import goorm.brainsnack.quiz.dto.MemberQuizResponseDto;
 import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
-import goorm.brainsnack.quiz.dto.QuizRequestDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.*;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
 
 import java.util.List;
@@ -35,26 +34,34 @@ public class MemberQuiz extends BaseEntity {
     private Boolean isCorrect;
     private int choice;
 
-    public static MemberQuizResponseDto.MemberQuizDto getMemberQuizDto(MemberQuiz memberQuiz) {
-        return MemberQuizResponseDto.MemberQuizDto.builder()
+    /**
+     * 풀었던 유사 문제 조회를 위한 id
+     * 어떤 문제로부터 만들어진 문제인지 알아야한다.
+     */
+    private Long basedQuizId;
+
+    public static MemberQuizDto getMemberQuizDto(MemberQuiz memberQuiz) {
+        return MemberQuizDto.builder()
                 .quizNum(memberQuiz.getQuiz().getQuizNum())
                 .quizId(memberQuiz.getQuiz().getId())
                 .build();
     }
 
-    public static MemberQuizResponseDto.MemberQuizDto getMemberSimilarQuizDto(MemberQuiz memberQuiz , int count) {
-        return MemberQuizResponseDto.MemberQuizDto.builder()
+    public static MemberQuizWithIsCorrectDto getMemberSimilarQuizDto(MemberQuiz memberQuiz , int count) {
+        return MemberQuizWithIsCorrectDto.builder()
+                .isCorrect(memberQuiz.getIsCorrect())
                 .quizNum(count)
                 .quizId(memberQuiz.getQuiz().getId())
                 .build();
     }
 
     public static SimilarQuizResponseDto.MemberSimilarQuizDto getMemberSimilarQuizListDto(MemberResponseDto.MemberDto member ,
-                                                                                          List<MemberQuizResponseDto.MemberQuizDto> result) {
+                                                                                          List<MemberQuizWithIsCorrectDto> result, int quizNum) {
         return SimilarQuizResponseDto.MemberSimilarQuizDto.builder()
                 .memberId(member.getId())
                 .entryCode(member.getEntryCode())
                 .createSimilarQuizCount(result.size())
+                .quizNum(quizNum)
                 .memberQuizList(result)
                 .build();
     }
@@ -68,6 +75,21 @@ public class MemberQuiz extends BaseEntity {
         return MemberQuiz.builder()
                 .member(member)
                 .quiz(quiz)
+                .isCorrect(userCorrect)
+                .choice(request.getChoice())
+                .build();
+    }
+
+    public static MemberQuiz toSimilarQuiz(SimilarQuizSingleGradeRequestDto request, Member member, Quiz quiz) {
+
+        boolean userCorrect = false;
+        if (quiz.getAnswer() == request.getChoice()) {
+            userCorrect = true;
+        }
+        return MemberQuiz.builder()
+                .member(member)
+                .quiz(quiz)
+                .basedQuizId(quiz.getId())
                 .isCorrect(userCorrect)
                 .choice(request.getChoice())
                 .build();

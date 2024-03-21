@@ -2,6 +2,7 @@ package goorm.brainsnack.quiz.presentation;
 
 import goorm.brainsnack.global.BaseResponse;
 import goorm.brainsnack.quiz.dto.ChatGPTRequestDto;
+import goorm.brainsnack.quiz.dto.QuizRequestDto;
 import goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.FullGradeRequestDto;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 
 @Slf4j
 @RestController
@@ -31,28 +34,34 @@ public class QuizController {
 
     private final ChatGPTService chatGPTService;
     private static final String COMMENT_WITH_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
-            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘 그리고 정답은 몇 번인지 숫자로만 넘겨줘 예를 들어 1번이면 1 , 2번이면 2 이렇게만 출력해줘";
+            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘" +
+            "정답이 꼭 존재하는 문제로 만들어줘";
     private static final String COMMENT_NO_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
-            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘 그리고 정답은 몇 번인지 숫자로만 넘겨줘 예를 들어 1번이면 1 , 2번이면 2 이렇게만 출력해줘";
+            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘" +
+            "정답이 꼭 존재하는 문제로 만들어줘";
+//    private static final String COMMENT_WITH_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
+//        "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
+//    private static final String COMMENT_NO_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
+//            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
 
-    // 유사 문제 풀기
-    @GetMapping("/quiz/{quizId}/similar-quiz")
+    // 유사 문제 생성
+    @PostMapping("/quiz/{quizId}/similar-quiz")
     public ResponseEntity<BaseResponse<SimilarQuizResponseDto.CreateDto>> createSimilarQuiz(@PathVariable Long quizId) {
 
         // 1. 문제 가져오고 GPT 에게 넘길 content 만들기
-        QuizResponseDto.QuizDetailDto quizDto = quizService.findQuiz(quizId);
+        QuizDetailDto quizDto = quizService.findQuiz(quizId);
         String content = createQuizTitle(quizDto);
 
         // 2. 1번에서 만든 content(문제)를 가지고 GPT 에 넘길 Dto 생성
         List<ChatGPTRequestDto.ChatRequestMsgDto> message = new ArrayList<>();
         message.add(new ChatGPTRequestDto.ChatRequestMsgDto("system" , content));
-        ChatGPTRequestDto.ChatCompletionDto chatCompletionDto = new ChatGPTRequestDto.ChatCompletionDto("gpt-3.5-turbo-16k" , message);
+        ChatGPTRequestDto.ChatCompletionDto chatCompletionDto = new ChatGPTRequestDto.ChatCompletionDto("gpt-3.5-turbo" , message);
 
         // 3. GPT API 에 전달 후 result 로 받기
         SimilarQuizResponseDto.CreateDto result = chatGPTService.prompt(chatCompletionDto,quizDto);
         return ResponseEntity.ok(new BaseResponse<>(result));
     }
-    private static String createQuizTitle(QuizResponseDto.QuizDetailDto quizDto) {
+    private static String createQuizTitle(QuizDetailDto quizDto) {
         String content;
         if (quizDto.getExample().equals("X")) {
             content = "문제 : " + quizDto.getTitle() + "\n" + "1번 : " + quizDto.getChoiceFirst() + "\n" +
@@ -83,10 +92,19 @@ public class QuizController {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeSingleQuiz(memberId, quizId, request)));
     }
 
-    @PostMapping("/members/{member-id}/quiz/{category}/grades")
+    @PostMapping("/members/{member-id}/quizs/{category}/grade")
     public ResponseEntity<BaseResponse<FullGradeDto>> gradeFullQuiz(@PathVariable("member-id") Long memberId,
                                                                     @PathVariable("category") String category,
                                                                     @RequestBody FullGradeRequestDto request) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeFullQuiz(memberId, category, request)));
+    }
+
+    // 유사 문제 채점할 때 해당 유사 문제가 DB 에 저장되기 떄문에 SimilarQuizSingleGradeRequestDto 에 문제 정보가 모두 넘어와야 한다.
+    @PostMapping("/members/{member-id}/similar-quiz/grade")
+    public ResponseEntity<BaseResponse<SimilarQuizSingleGradeDto>> gradeSingleQuiz(@PathVariable("member-id") Long memberId,
+                                                                                          @RequestBody SimilarQuizSingleGradeRequestDto request) {
+
+        SimilarQuizSingleGradeDto similarQuizSingleGradeDto = quizService.gradeSiringSimilarQuiz(memberId, request);
+        return ResponseEntity.ok().body(new BaseResponse<>(similarQuizSingleGradeDto));
     }
 }

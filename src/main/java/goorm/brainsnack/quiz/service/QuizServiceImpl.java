@@ -22,8 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.FullGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.FullGradeDto;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.QuizDetailDto;
 
@@ -38,26 +40,26 @@ public class QuizServiceImpl implements QuizService {
     private final QuizDataRepository dataRepository;
 
     @Override
-    public QuizResponseDto.QuizDetailDto findQuiz(Long quizId) {
+    public QuizDetailDto findQuiz(Long quizId) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new QuizException(ErrorCode.NOT_EXIST_QUIZ));
         // 여기서 DTO 로 반환해서 Controller 에게 넘겨주기
-        return QuizResponseDto.QuizDetailDto.from(quiz);
+        return QuizDetailDto.from(quiz);
     }
     
     @Override
-    public QuizResponseDto.GetTotalMemberDto getTotalNum(Long memberId) {
+    public GetTotalMemberDto getTotalNum(Long memberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
         List<MemberQuiz> members = memberQuizRepository.findAllByMember(member);
 
         // 풀었던 퀴즈가 없는 경우
         if (members.isEmpty()) {
-            return QuizResponseDto.GetTotalMemberDto.from(0);
+            return GetTotalMemberDto.from(0);
         }
 
         int totalQuizNum = memberQuizRepository.findAllByMember(member).size();
-        return QuizResponseDto.GetTotalMemberDto.from(totalQuizNum);
+        return GetTotalMemberDto.from(totalQuizNum);
     }
 
     @Override
@@ -81,6 +83,32 @@ public class QuizServiceImpl implements QuizService {
                 .toList());
     }
 
+    @Override
+    @Transactional
+    public SimilarQuizSingleGradeDto gradeSiringSimilarQuiz(Long memberId, SimilarQuizSingleGradeRequestDto request) {
+
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
+
+        /**
+         * quizNum 을 지정해주기 위해서 가져오는 코드
+         */
+        List<Quiz> quizList = quizRepository.findAllByCategory(QuizCategory.getInstance(request.getCategory()));
+
+        // 유사 문제 채점했기 떄문에 이때 저장
+        Quiz similarQuiz = Quiz.of((quizList.size()+1), request.getTitle(), request.getExample(),
+                request.getChoiceFirst(), request.getChoiceSecond(), request.getChoiceThird(),
+                request.getChoiceFourth(), request.getChoiceFifth(), request.getAnswer(), request.getSolution(),
+                request.getIsSimilar(), QuizCategory.getInstance(request.getCategory()));
+        quizRepository.save(similarQuiz);
+
+        // MemberQuiz 에도 저장
+        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.toSimilarQuiz(request, member, similarQuiz));
+
+        // 여기만 만들면 유사 문제 채점도 완료
+        return SimilarQuizSingleGradeDto.of(similarQuiz,memberQuiz);
+    }
+
     @Transactional
     @Override
     public SingleGradeDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request) {
@@ -102,5 +130,4 @@ public class QuizServiceImpl implements QuizService {
 
         return SingleGradeDto.of(quiz, memberQuiz, data, ratio);
     }
-
 }
