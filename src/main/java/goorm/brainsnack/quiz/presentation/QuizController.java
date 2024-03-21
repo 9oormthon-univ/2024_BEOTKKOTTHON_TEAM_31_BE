@@ -50,7 +50,7 @@ public class QuizController {
         ChatGPTRequestDto.ChatCompletionDto chatCompletionDto = new ChatGPTRequestDto.ChatCompletionDto("gpt-3.5-turbo-16k" , message);
 
         // 3. GPT API 에 전달 후 result 로 받기
-        SimilarQuizResponseDto.CreateDto result = chatGPTService.prompt(chatCompletionDto,quizDto);
+        SimilarQuizResponseDto.CreateDto result = chatGPTService.prompt(chatCompletionDto, quizDto);
         return ResponseEntity.ok(new BaseResponse<>(result));
     }
     private static String createQuizTitle(QuizDetailDto quizDto) {
