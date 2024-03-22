@@ -104,7 +104,7 @@ public class QuizController {
     public ResponseEntity<BaseResponse<SimilarQuizSingleGradeDto>> gradeSingleQuiz(@PathVariable("member-id") Long memberId,
                                                                                           @RequestBody SimilarQuizSingleGradeRequestDto request) {
 
-        SimilarQuizSingleGradeDto similarQuizSingleGradeDto = quizService.gradeSiringSimilarQuiz(memberId, request);
+        SimilarQuizSingleGradeDto similarQuizSingleGradeDto = quizService.gradeSingleSimilarQuiz(memberId, request);
         return ResponseEntity.ok().body(new BaseResponse<>(similarQuizSingleGradeDto));
     }
 }

@@ -85,7 +85,7 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     @Transactional
-    public SimilarQuizSingleGradeDto gradeSiringSimilarQuiz(Long memberId, SimilarQuizSingleGradeRequestDto request) {
+    public SimilarQuizSingleGradeDto gradeSingleSimilarQuiz(Long memberId, SimilarQuizSingleGradeRequestDto request) {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
@@ -105,7 +105,6 @@ public class QuizServiceImpl implements QuizService {
         // MemberQuiz 에도 저장
         MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.toSimilarQuiz(request, member, similarQuiz));
 
-        // 여기만 만들면 유사 문제 채점도 완료
         return SimilarQuizSingleGradeDto.of(similarQuiz,memberQuiz);
     }
 

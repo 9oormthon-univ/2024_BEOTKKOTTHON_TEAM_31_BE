@@ -41,13 +41,13 @@ public class MemberController {
     }
 
     // 내가 생성한 유사 문제 조회
-    @GetMapping("/members/{memberId}/similar-quiz/{quizId}/{category}")
-    public ResponseEntity<BaseResponse<SimilarQuizResponseDto.MemberSimilarQuizDto>> getSimilarQuizList(@PathVariable Long memberId,
-                                                                                                        @PathVariable Long quizId,
-                                                                                                        @PathVariable String category) {
-        SimilarQuizResponseDto.MemberSimilarQuizDto result = memberService.getSimilarQuiz(memberId,category,quizId);
-        return ResponseEntity.ok().body(new BaseResponse<>(result));
-    }
+//    @GetMapping("/members/{memberId}/similar-quiz/{quizId}/{category}")
+//    public ResponseEntity<BaseResponse<SimilarQuizResponseDto.MemberSimilarQuizDto>> getSimilarQuizList(@PathVariable Long memberId,
+//                                                                                                        @PathVariable Long quizId,
+//                                                                                                        @PathVariable String category) {
+//        SimilarQuizResponseDto.MemberSimilarQuizDto result = memberService.getSimilarQuiz(memberId,category,quizId);
+//        return ResponseEntity.ok().body(new BaseResponse<>(result));
+//    }
 
     // 내가 생성한 유사 문제 조회 (quizId 를 받는게 아닌 quizNum 을 받을때)
     @GetMapping("/members/{memberId}/similar-quiz/{quizNum}/{category}")
