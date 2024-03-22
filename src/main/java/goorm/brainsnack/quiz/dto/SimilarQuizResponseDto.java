@@ -5,6 +5,8 @@ import lombok.Getter;
 
 import java.util.List;
 
+import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.*;
+
 public class SimilarQuizResponseDto {
 
     @Builder @Getter
@@ -32,6 +34,6 @@ public class SimilarQuizResponseDto {
         private int quizNum;
         private int createSimilarQuizCount;
 
-        private List<MemberQuizResponseDto.MemberQuizDto> memberQuizList;
+        private List<MemberQuizWithIsCorrectDto> memberQuizList;
     }
 }

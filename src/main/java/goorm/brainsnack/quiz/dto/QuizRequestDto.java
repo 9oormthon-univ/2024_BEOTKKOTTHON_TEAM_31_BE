@@ -1,7 +1,6 @@
 package goorm.brainsnack.quiz.dto;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 import java.util.List;
 
@@ -23,4 +22,21 @@ public class QuizRequestDto {
         private int choice;
     }
 
+    @Getter
+    @Builder
+    public static class SimilarQuizSingleGradeRequestDto {
+        private int quizNum;
+        private String category;
+        private Boolean isSimilar;
+        private int choice;
+        private String title;
+        private String example;
+        private String choiceFirst;
+        private String choiceSecond;
+        private String choiceThird;
+        private String choiceFourth;
+        private String choiceFifth;
+        private int answer;
+        private String solution;
+    }
 }

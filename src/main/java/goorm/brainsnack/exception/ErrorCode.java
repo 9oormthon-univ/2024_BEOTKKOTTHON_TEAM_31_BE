@@ -33,6 +33,12 @@ public enum ErrorCode {
 
 
     /**
+     * 유사 문제 생성 에러
+     */
+    CREATE_QUIZ_BAD_REQUEST(HttpStatus.BAD_REQUEST , "Q004" , "문제가 정상적으로 생성되지 않았습니다."),
+
+
+    /**
      * 일반 오류 코드
      */
     BAD_REQUEST(HttpStatus.BAD_REQUEST, "Z002", "잘못된 요청입니다"),

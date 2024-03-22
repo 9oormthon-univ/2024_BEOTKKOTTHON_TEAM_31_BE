@@ -2,6 +2,7 @@ package goorm.brainsnack.quiz.presentation;
 
 import goorm.brainsnack.global.BaseResponse;
 import goorm.brainsnack.quiz.dto.ChatGPTRequestDto;
+import goorm.brainsnack.quiz.dto.QuizRequestDto;
 import goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.GetTotalMemberDto;
@@ -32,12 +33,18 @@ public class QuizController {
 
     private final ChatGPTService chatGPTService;
     private static final String COMMENT_WITH_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
-            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
+            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘" +
+            "정답이 꼭 존재하는 문제로 만들어줘";
     private static final String COMMENT_NO_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
-            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
+            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘" +
+            "정답이 꼭 존재하는 문제로 만들어줘";
+//    private static final String COMMENT_WITH_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
+//        "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
+//    private static final String COMMENT_NO_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
+//            "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
 
-    // 유사 문제 풀기
-    @GetMapping("/quiz/{quizId}/similar-quiz")
+    // 유사 문제 생성
+    @PostMapping("/quiz/{quizId}/similar-quiz")
     public ResponseEntity<BaseResponse<SimilarQuizResponseDto.CreateDto>> createSimilarQuiz(@PathVariable Long quizId) {
 
         // 1. 문제 가져오고 GPT 에게 넘길 content 만들기
@@ -47,7 +54,7 @@ public class QuizController {
         // 2. 1번에서 만든 content(문제)를 가지고 GPT 에 넘길 Dto 생성
         List<ChatGPTRequestDto.ChatRequestMsgDto> message = new ArrayList<>();
         message.add(new ChatGPTRequestDto.ChatRequestMsgDto("system" , content));
-        ChatGPTRequestDto.ChatCompletionDto chatCompletionDto = new ChatGPTRequestDto.ChatCompletionDto("gpt-3.5-turbo-16k" , message);
+        ChatGPTRequestDto.ChatCompletionDto chatCompletionDto = new ChatGPTRequestDto.ChatCompletionDto("gpt-3.5-turbo" , message);
 
         // 3. GPT API 에 전달 후 result 로 받기
         SimilarQuizResponseDto.CreateDto result = chatGPTService.prompt(chatCompletionDto, quizDto);
@@ -95,6 +102,14 @@ public class QuizController {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeMultiQuiz(memberId, category, request)));
     }
 
+    @PostMapping("/members/{member-id}/similar-quiz/grade")
+    public ResponseEntity<BaseResponse<SimilarQuizSingleGradeDto>> gradeSingleQuiz(@PathVariable("member-id") Long memberId,
+                                                                                          @RequestBody SimilarQuizSingleGradeRequestDto request) {
+
+        SimilarQuizSingleGradeDto similarQuizSingleGradeDto = quizService.gradeSingleSimilarQuiz(memberId, request);
+        return ResponseEntity.ok().body(new BaseResponse<>(similarQuizSingleGradeDto));
+    }
+}
     //전체 문제 채점 결과 리스트 조회
     @GetMapping("/members/{member-id}/quiz/{category}/grade")
     public ResponseEntity<BaseResponse<MultiResultResponseDto>> getFullQuizResult(@PathVariable("member-id") Long memberId,

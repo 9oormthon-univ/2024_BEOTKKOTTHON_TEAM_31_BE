@@ -24,7 +24,6 @@ public class BaseResponse<T> {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private T result;
 
-
     public BaseResponse(T result) {
         this.status = SUCCESS.getStatus();
         this.code = SUCCESS.getCode();

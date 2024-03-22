@@ -9,6 +9,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -25,12 +27,17 @@ import java.util.Iterator;
 public class QuizInit {
 
     private final InitService initService;
+    private final QuizRepository quizRepository;
 
-    @PostConstruct
+    @EventListener(ApplicationReadyEvent.class)
     public void init() throws FileNotFoundException {
-        initService.init();
+        /**
+         * DB 에 데이터가 있는 경우에는 초기화를 하지 않습니다.
+         */
+        if (quizRepository.findAll().size() == 0) {
+            initService.init();
+        }
     }
-
     @Component
     @Transactional
     @RequiredArgsConstructor
