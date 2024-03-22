@@ -77,12 +77,10 @@ public class ChatGPTServiceImpl implements ChatGPTService {
     private static boolean SimilarQuizFieldCheck(SimilarQuizResponseDto.CreateDto similarQuiz) {
         // example , 5번이 없는 경우는 일단 보류
         boolean hasEmptyField =
-                similarQuiz.getTitle() == null || similarQuiz.getTitle().isEmpty() ||
-                        similarQuiz.getChoiceFirst() == null || similarQuiz.getChoiceFirst().isEmpty() ||
-                        similarQuiz.getChoiceSecond() == null || similarQuiz.getChoiceSecond().isEmpty() ||
-                        similarQuiz.getChoiceThird() == null || similarQuiz.getChoiceThird().isEmpty() ||
-                        similarQuiz.getChoiceFourth() == null || similarQuiz.getChoiceFourth().isEmpty() ||
-                        similarQuiz.getSolution() == null || similarQuiz.getSolution().isEmpty();
+                        similarQuiz.getTitle().equals("X") || similarQuiz.getTitle().isEmpty() ||
+                        similarQuiz.getChoiceFirst().equals("X")  || similarQuiz.getChoiceSecond().equals("X") ||
+                        similarQuiz.getChoiceThird().equals("X")  || similarQuiz.getChoiceFourth().equals("X") ||
+                        similarQuiz.getSolution().equals("X");
         return hasEmptyField;
     }
 
@@ -94,18 +92,16 @@ public class ChatGPTServiceImpl implements ChatGPTService {
         String[] split = content.split("\n");
         return split;
     }
-
-
     private static SimilarQuizResponseDto.CreateDto createSimilarQuiz(QuizResponseDto.QuizDetailDto quizDetailDto, String[] split) {
-        String title = null;
-        String choiceFirst = null;
-        String choiceSecond = null;
-        String choiceThird = null;
-        String choiceFourth = null;
-        String choiceFifth = null;
+        String title = "X";
+        String choiceFirst = "X";
+        String choiceSecond = "X";
+        String choiceThird = "X";
+        String choiceFourth = "X";
+        String choiceFifth = "X";
         int answer = 0;
-        String solution = null;
-        String example = null;
+        String solution = "X";
+        String example = "X";
 
         for (String s : split) {
             String[] div = s.split(":");

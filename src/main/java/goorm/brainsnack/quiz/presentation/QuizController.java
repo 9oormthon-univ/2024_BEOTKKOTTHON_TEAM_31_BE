@@ -1,15 +1,13 @@
 package goorm.brainsnack.quiz.presentation;
 
 import goorm.brainsnack.global.BaseResponse;
-import goorm.brainsnack.quiz.dto.ChatGPTRequestDto;
-import goorm.brainsnack.quiz.dto.QuizRequestDto;
+import goorm.brainsnack.member.service.MemberService;
+import goorm.brainsnack.quiz.dto.*;
 import goorm.brainsnack.quiz.dto.QuizRequestDto.SimilarQuizSingleGradeRequestDto;
 import goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
-import goorm.brainsnack.quiz.dto.QuizResponseDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.GetTotalMemberDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto.SimilarQuizSingleGradeDto;
-import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 import goorm.brainsnack.quiz.service.ChatGPTService;
 import goorm.brainsnack.quiz.service.QuizService;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +20,7 @@ import java.util.List;
 
 import static goorm.brainsnack.quiz.dto.ChatGPTRequestDto.*;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.MultiGradeRequestDto;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.QuizDetailDto;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.SimilarQuizSingleGradeDto.*;
 import static goorm.brainsnack.quiz.dto.SimilarQuizResponseDto.*;
@@ -35,12 +34,14 @@ public class QuizController {
     private final QuizService quizService;
 
     private final ChatGPTService chatGPTService;
+//    private final MemberService memberService;
     private static final String COMMENT_WITH_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
             "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘" +
             "정답이 꼭 존재하는 문제로 만들어줘";
     private static final String COMMENT_NO_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
             "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘" +
             "정답이 꼭 존재하는 문제로 만들어줘";
+
 //    private static final String COMMENT_WITH_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
 //        "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘";
 //    private static final String COMMENT_NO_EXAMPLE = "위와 같은 형식으로 유사한 문제와 정답, " +
@@ -65,17 +66,17 @@ public class QuizController {
     }
 
     private static String createQuizTitle(QuizDetailDto quizDto) {
-        String content;
+        String title;
         if (quizDto.getExample().equals("X")) {
-            content = "문제 : " + quizDto.getTitle() + "\n" + "1번 : " + quizDto.getChoiceFirst() + "\n" +
+            title = "문제 : " + quizDto.getTitle() + "\n" + "1번 : " + quizDto.getChoiceFirst() + "\n" +
                     "2번 : " + quizDto.getChoiceSecond() + "\n" + "3번 : " + quizDto.getChoiceThird() + "\n" + "4번 : " + quizDto.getChoiceFourth() + "\n" +
                     "5번 : " + quizDto.getChoiceFifth() + "\n" + "정답 : " + quizDto.getAnswer() + "\n" + "해설 : " + quizDto.getSolution() + "\n" + COMMENT_NO_EXAMPLE;
         } else {
-            content = "문제 : " + quizDto.getTitle() + "\n" + "예시 : " + quizDto.getExample() + "\n" + "1번 : " + quizDto.getChoiceFirst() + "\n" +
+            title = "문제 : " + quizDto.getTitle() + "\n" + "예시 : " + quizDto.getExample() + "\n" + "1번 : " + quizDto.getChoiceFirst() + "\n" +
                     "2번 : " + quizDto.getChoiceSecond() + "\n" + "3번 : " + quizDto.getChoiceThird() + "\n" + "4번 : " + quizDto.getChoiceFourth() + "\n" +
                     "5번 : " + quizDto.getChoiceFifth() + "\n" + "정답 : " + quizDto.getAnswer() + "\n" + "해설 : " + quizDto.getSolution() + "\n" + COMMENT_WITH_EXAMPLE;
         }
-        return content;
+        return title;
     }
 
     //영역별 모든 문제 조회
@@ -119,5 +120,27 @@ public class QuizController {
     public ResponseEntity<BaseResponse<MultiResultResponseDto>> getFullQuizResult(@PathVariable("member-id") Long memberId,
                                                                                   @PathVariable("category") String category) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.getFullResult(memberId, category)));
+    }
+
+    // 내가 틀린 문제 조회 (기존 문제)
+    @GetMapping("/members/{memberId}/quiz/wrong/{category}")
+    public ResponseEntity<BaseResponse<List<MemberQuizResponseDto.MemberQuizDto>>> getWrongQuizList(@PathVariable Long memberId,
+                                                                                                    @PathVariable String category) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getWrongQuizList(memberId,category)));
+    }
+
+    // 내가 맞은 문제 조회 (기존 문제)
+    @GetMapping("/members/{memberId}/quiz/correct/{category}")
+    public ResponseEntity<BaseResponse<List<MemberQuizResponseDto.MemberQuizDto>>> getCorrectQuizList(@PathVariable Long memberId,
+                                                                                                      @PathVariable String category) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getCorrectQuizList(memberId,category)));
+    }
+
+    // 내가 생성한 유사 문제 조회
+    @GetMapping("/members/{memberId}/similar-quiz/{quizId}/{category}")
+    public ResponseEntity<BaseResponse<MemberSimilarQuizDto>> getSimilarQuizList(@PathVariable Long memberId,
+                                                                                 @PathVariable Long quizId,
+                                                                                 @PathVariable String category) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getSimilarQuiz(memberId,category,quizId)));
     }
 }
