@@ -60,13 +60,13 @@ public class ChatGPTServiceImpl implements ChatGPTService {
             System.out.println("***");
         }
 
+        SimilarQuizResponseDto.CreateDto similarQuiz = createSimilarQuiz(quizDetailDto, split);
 
         // similarQuiz 가 제대로 생성됐는지 확인하는 로직
         if (SimilarQuizFieldCheck(similarQuiz)) {
             throw new BaseException(ErrorCode.CREATE_QUIZ_BAD_REQUEST);
         }
 
-        SimilarQuizResponseDto.CreateDto similarQuiz = createSimilarQuiz(quizDetailDto, split);
         return similarQuiz;
     }
 

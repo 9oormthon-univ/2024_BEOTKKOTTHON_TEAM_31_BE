@@ -27,4 +27,17 @@ public interface MemberQuizRepository extends JpaRepository<MemberQuiz, Long> {
             @Param("member")Member member,
             @Param("isCorrect")Boolean isCorrect,
             @Param("category")QuizCategory category);
+
+
+    @Query("SELECT mq From MemberQuiz mq " +
+            "JOIN FETCH mq.quiz q " +
+            "WHERE mq.member.id = :memberId AND q.category = :category")
+    List<MemberQuiz> findMemberQuizList(@Param("memberId") Long memberId , @Param("category") QuizCategory category);
+
+
+    @Query("SELECT mq From MemberQuiz mq " +
+            "JOIN FETCH mq.quiz q " +
+            "WHERE mq.member.id = :memberId AND mq.basedQuizId = :quizId AND q.isSimilar = TRUE and q.category = :category")
+    List<MemberQuiz> findMemberSimilarQuiz(@Param(("memberId")) Long memberId , @Param("category") QuizCategory category ,
+                                           @Param("quizId") Long quizId);
 }

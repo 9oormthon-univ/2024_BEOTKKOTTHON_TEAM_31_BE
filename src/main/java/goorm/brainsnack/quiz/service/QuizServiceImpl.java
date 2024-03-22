@@ -10,6 +10,7 @@ import goorm.brainsnack.quiz.domain.MemberQuiz;
 import goorm.brainsnack.quiz.domain.Quiz;
 import goorm.brainsnack.quiz.domain.QuizCategory;
 import goorm.brainsnack.quiz.domain.QuizData;
+import goorm.brainsnack.quiz.dto.QuizRequestDto;
 import goorm.brainsnack.quiz.repository.MemberQuizRepository;
 import goorm.brainsnack.quiz.repository.QuizDataRepository;
 import goorm.brainsnack.quiz.repository.QuizRepository;
@@ -24,6 +25,7 @@ import java.util.Optional;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.MultiGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.SimilarQuizSingleGradeDto.*;
 
 @Service
 @Transactional(readOnly = true)
@@ -65,7 +67,7 @@ public class QuizServiceImpl implements QuizService {
         List<Quiz> quizzes = quizRepository.findAllByCategoryAndIsSimilar(category, false);
 
         return CategoryQuizListDto.builder()
-                .size(quizList.size())
+                .size(quizzes.size())
                 .quizzes(quizzes.stream()
                         .map(SingleQuizDto::from)
                         .toList())
@@ -87,27 +89,30 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     @Transactional
-    public SimilarQuizSingleGradeDto gradeSingleSimilarQuiz(Long memberId, SimilarQuizSingleGradeRequestDto request) {
+    public SimilarQuizSingleGradeDto gradeSingleSimilarQuiz(Long memberId, Long quizId , QuizRequestDto.SimilarQuizSingleGradeRequestDto request) {
 
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
 
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
+
         /**
          * quizNum 을 지정해주기 위해서 가져오는 코드
          */
-        List<Quiz> quizList = quizRepository.findAllByCategory(QuizCategory.getInstance(request.getCategory()));
+        List<Quiz> quizList = quizRepository.findAllByCategory(quiz.getCategory());
 
         // 유사 문제 채점했기 떄문에 이때 저장
         Quiz similarQuiz = Quiz.of((quizList.size()+1), request.getTitle(), request.getExample(),
                 request.getChoiceFirst(), request.getChoiceSecond(), request.getChoiceThird(),
                 request.getChoiceFourth(), request.getChoiceFifth(), request.getAnswer(), request.getSolution(),
-                request.getIsSimilar(), QuizCategory.getInstance(request.getCategory()));
+                Boolean.TRUE,quiz.getCategory());
         quizRepository.save(similarQuiz);
 
         // MemberQuiz 에도 저장
-        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.toSimilarQuiz(request, member, similarQuiz));
+        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.toSimilarQuiz(request, member, similarQuiz , quiz.getId()));
 
-        return SimilarQuizSingleGradeDto.of(similarQuiz,memberQuiz);
+        return of(similarQuiz,memberQuiz);
     }
 
     @Transactional

@@ -9,6 +9,7 @@ import lombok.*;
 
 import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.*;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
+import static goorm.brainsnack.quiz.dto.SimilarQuizResponseDto.*;
 
 import java.util.List;
 
@@ -35,8 +36,8 @@ public class MemberQuiz extends BaseEntity {
     private int choice;
 
     /**
-     * 풀었던 유사 문제 조회를 위한 id
-     * 어떤 문제로부터 만들어진 문제인지 알아야한다.
+     * 풀었던 유사 문제 조회를 하기 위해서 필요한 필드
+     * 유사 문제가 만들어질 때 어떤 문제로부터 만들어졌는지에 대한 정보를 담아둬야 추적이 가능하다.
      */
     private Long basedQuizId;
 
@@ -55,9 +56,9 @@ public class MemberQuiz extends BaseEntity {
                 .build();
     }
 
-    public static SimilarQuizResponseDto.MemberSimilarQuizDto getMemberSimilarQuizListDto(MemberResponseDto.MemberDto member ,
+    public static MemberSimilarQuizDto getMemberSimilarQuizListDto(MemberResponseDto.MemberDto member ,
                                                                                           List<MemberQuizWithIsCorrectDto> result, int quizNum) {
-        return SimilarQuizResponseDto.MemberSimilarQuizDto.builder()
+        return MemberSimilarQuizDto.builder()
                 .memberId(member.getId())
                 .entryCode(member.getEntryCode())
                 .createSimilarQuizCount(result.size())
@@ -81,7 +82,7 @@ public class MemberQuiz extends BaseEntity {
                 .build();
     }
 
-    public static MemberQuiz toSimilarQuiz(SimilarQuizSingleGradeRequestDto request, Member member, Quiz quiz) {
+    public static MemberQuiz toSimilarQuiz(SimilarQuizSingleGradeRequestDto request, Member member, Quiz quiz , Long basedQuizId) {
 
         boolean userCorrect = false;
         if (quiz.getAnswer() == request.getChoice()) {
@@ -90,7 +91,7 @@ public class MemberQuiz extends BaseEntity {
         return MemberQuiz.builder()
                 .member(member)
                 .quiz(quiz)
-                .basedQuizId(quiz.getId())
+                .basedQuizId(basedQuizId)
                 .isCorrect(userCorrect)
                 .choice(request.getChoice())
                 .build();

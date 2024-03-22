@@ -10,11 +10,11 @@ public interface QuizService {
     GetTotalMemberDto getTotalNum(Long memberId);
     CategoryQuizListDto getCategoryQuizzes(String category);
 
-    SingleGradeDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request);
+    SimilarQuizSingleGradeDto.SingleGradeDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request);
 
 
-    SimilarQuizSingleGradeDto gradeSingleSimilarQuiz(Long memberId, SimilarQuizSingleGradeRequestDto request);
-    MultiGradeDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request);
+    SimilarQuizSingleGradeDto gradeSingleSimilarQuiz(Long memberId, Long quizId , SimilarQuizSingleGradeRequestDto request);
+    SimilarQuizSingleGradeDto.MultiGradeDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request);
 
-    MultiResultResponseDto getFullResult(Long memberId, String category);
+    SimilarQuizSingleGradeDto.MultiResultResponseDto getFullResult(Long memberId, String category);
 }
