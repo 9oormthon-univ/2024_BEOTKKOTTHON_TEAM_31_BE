@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
-    List<Quiz> findAllByCategory(QuizCategory category);
+    List<Quiz> findAllByCategoryAndIsSimilar(QuizCategory category, Boolean isSimilar);
 
     Optional<Quiz> findQuizByCategoryAndQuizNum(QuizCategory category , int quizNum);
 

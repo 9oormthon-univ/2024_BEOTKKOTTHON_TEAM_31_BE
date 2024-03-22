@@ -24,11 +24,11 @@ public class MemberQuiz extends BaseEntity {
     @Column(name = "memberQuiz_id")
     private Long id;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
     private Boolean isCorrect;
@@ -68,6 +68,7 @@ public class MemberQuiz extends BaseEntity {
 
     public static MemberQuiz of(SingleGradeRequestDto request, Member member, Quiz quiz) {
         boolean userCorrect = false;
+
         if (quiz.getAnswer() == request.getChoice()) {
             userCorrect = true;
         }

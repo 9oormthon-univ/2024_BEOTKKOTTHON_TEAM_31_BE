@@ -8,11 +8,13 @@ import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 public interface QuizService {
     QuizResponseDto.QuizDetailDto findQuiz(Long quizId);
     GetTotalMemberDto getTotalNum(Long memberId);
-    CategoryQuizListDto getCategoryQuizList(String category);
+    CategoryQuizListDto getCategoryQuizzes(String category);
 
     SingleGradeDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request);
 
-    FullGradeDto gradeFullQuiz(Long memberId, String category, FullGradeRequestDto request);
 
     SimilarQuizSingleGradeDto gradeSingleSimilarQuiz(Long memberId, SimilarQuizSingleGradeRequestDto request);
+    MultiGradeDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request);
+
+    MultiResultResponseDto getFullResult(Long memberId, String category);
 }

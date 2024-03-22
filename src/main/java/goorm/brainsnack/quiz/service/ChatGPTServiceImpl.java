@@ -7,7 +7,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import goorm.brainsnack.exception.BaseException;
 import goorm.brainsnack.exception.ErrorCode;
 import goorm.brainsnack.global.config.ChatGPTConfig;
-import goorm.brainsnack.quiz.domain.QuizCategory;
 import goorm.brainsnack.quiz.dto.ChatGPTRequestDto;
 import goorm.brainsnack.quiz.dto.QuizResponseDto;
 import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
@@ -31,7 +30,8 @@ public class ChatGPTServiceImpl implements ChatGPTService {
     @Value("${openai.url.prompt}")
     private String promptUrl;
     @Override
-    public SimilarQuizResponseDto.CreateDto prompt(ChatGPTRequestDto.ChatCompletionDto chatCompletionDto, QuizResponseDto.QuizDetailDto quizDto) {
+    public SimilarQuizResponseDto.CreateDto prompt(ChatGPTRequestDto.ChatCompletionDto chatCompletionDto, QuizResponseDto.QuizDetailDto quizDetailDto) {
+
         Map<String, Object> resultMap = new HashMap<>();
         // 토큰 정보가 포함된 Header 가져오기
         HttpHeaders headers = chatGPTConfig.httpHeaders();
@@ -60,12 +60,13 @@ public class ChatGPTServiceImpl implements ChatGPTService {
             System.out.println("***");
         }
 
-        SimilarQuizResponseDto.CreateDto similarQuiz = createSimilarQuiz(quizDto, split);
 
         // similarQuiz 가 제대로 생성됐는지 확인하는 로직
         if (SimilarQuizFieldCheck(similarQuiz)) {
             throw new BaseException(ErrorCode.CREATE_QUIZ_BAD_REQUEST);
         }
+
+        SimilarQuizResponseDto.CreateDto similarQuiz = createSimilarQuiz(quizDetailDto, split);
         return similarQuiz;
     }
 
@@ -95,7 +96,7 @@ public class ChatGPTServiceImpl implements ChatGPTService {
     }
 
 
-    private static SimilarQuizResponseDto.CreateDto createSimilarQuiz(QuizResponseDto.QuizDetailDto quizDto , String[] split) {
+    private static SimilarQuizResponseDto.CreateDto createSimilarQuiz(QuizResponseDto.QuizDetailDto quizDetailDto, String[] split) {
         String title = null;
         String choiceFirst = null;
         String choiceSecond = null;
@@ -149,8 +150,8 @@ public class ChatGPTServiceImpl implements ChatGPTService {
                 .choiceFifth(choiceFifth)
                 .answer(answer)
                 .example(example)
-                .quizNum(quizDto.getQuizNum())
-                .category(quizDto.getCategory())
+                .quizNum(quizDetailDto.getQuizNum())
+                .category(quizDetailDto.getCategory())
                 .isSimilar(Boolean.TRUE)
                 .build();
     }

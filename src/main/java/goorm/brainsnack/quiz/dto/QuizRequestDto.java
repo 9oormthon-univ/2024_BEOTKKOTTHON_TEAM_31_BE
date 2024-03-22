@@ -6,18 +6,17 @@ import java.util.List;
 
 public class QuizRequestDto {
 
-    // NoArgsConstructor 가 있어야 FullGradeRequestDto 객체를 역직렬화할 때 인스턴스를 생성
-    @Getter @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    @Builder @AllArgsConstructor(access = AccessLevel.PRIVATE)
-    public static class FullGradeRequestDto {
-        private List<SingleGradeRequestDto> gradeRequestList;
+    @Getter
+    @Builder
+    public static class MultiGradeRequestDto {
+        private String category;
+        private List<SingleGradeRequestDto> gradeRequests;
     }
 
     @Getter
     @Builder
     public static class SingleGradeRequestDto {
-        private Long id;
-        private int quizNum;
+        private Long quizId;
         private String category;
         private Boolean isSimilar;
         private int choice;

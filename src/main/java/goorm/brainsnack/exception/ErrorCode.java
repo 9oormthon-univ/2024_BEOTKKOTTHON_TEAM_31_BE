@@ -22,11 +22,15 @@ public enum ErrorCode {
     NOT_EXIST_USER(HttpStatus.NOT_FOUND, "M001", "존재하지 않는 유저입니다."),
     ALREADY_EXIST_MEMBER(HttpStatus.CONFLICT, "M002", "이미 존재하는 유저입니다."),
 
+
     /**
      * 문제 에러
      */
     NOT_EXIST_QUIZ(HttpStatus.NOT_FOUND, "Q001", "존재하지 않는 퀴즈입니다"),
+    ALREADY_FINISH_QUIZ(HttpStatus.CONFLICT, "Q002", "이미 풀이한 퀴즈입니다"),
+    CATEGORY_CONFLICT(HttpStatus.CONFLICT, "Q003", "영역이 일치하지 않습니다"),
     NOT_EXIST_CATEGORY(HttpStatus.NOT_FOUND, "Q010", "존재하지 않는 카테고리입니다"),
+
 
     /**
      * 유사 문제 생성 에러
