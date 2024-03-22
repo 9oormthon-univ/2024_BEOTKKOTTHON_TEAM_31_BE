@@ -5,6 +5,8 @@ import goorm.brainsnack.member.dto.MemberResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static goorm.brainsnack.member.dto.MemberResponseDto.*;
+
 @Getter
 @Builder
 @Entity
@@ -25,15 +27,15 @@ public class Member extends BaseEntity {
                 .build();
     }
 
-    public static MemberResponseDto.LoginDto toMemberRequestDto(Member member) {
-        return MemberResponseDto.LoginDto.builder()
+    public static LoginDto toMemberRequestDto(Member member) {
+        return LoginDto.builder()
                 .id(member.id)
                 .entryCode(member.temporaryId)
                 .build();
     }
 
-    public static MemberResponseDto.MemberDto toMemberDto(Member member) {
-        return MemberResponseDto.MemberDto.builder()
+    public static MemberDto toMemberDto(Member member) {
+        return MemberDto.builder()
                 .id(member.id)
                 .entryCode(member.temporaryId)
                 .build();

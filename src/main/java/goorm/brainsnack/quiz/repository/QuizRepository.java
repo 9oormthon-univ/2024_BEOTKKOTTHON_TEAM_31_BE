@@ -13,5 +13,6 @@ public interface QuizRepository extends JpaRepository<Quiz, Long> {
     List<Quiz> findAllByCategoryAndIsSimilar(QuizCategory category, Boolean isSimilar);
 
     Optional<Quiz> findQuizByCategoryAndQuizNum(QuizCategory category , int quizNum);
+    List<Quiz> findAllByCategory(QuizCategory category);
 
 }
