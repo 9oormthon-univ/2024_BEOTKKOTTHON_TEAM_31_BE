@@ -5,13 +5,14 @@ import lombok.Getter;
 
 import java.util.List;
 
+import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.*;
+
 public class SimilarQuizResponseDto {
 
     @Builder @Getter
     public static class CreateDto {
         private int quizNum;
         private String category;
-        private Boolean isSimilar;
         private String title;
         private String example;
         private String choiceFirst;
@@ -25,13 +26,12 @@ public class SimilarQuizResponseDto {
 
     @Builder @Getter
     public static class MemberSimilarQuizDto {
-        // Member 관련된 필드
         private Long memberId;
         private String entryCode;
         // 유사 문제를 생성했을 때 어떤 카테고리의 quizNum 문제를 사용했는지
         private int quizNum;
         private int createSimilarQuizCount;
 
-        private List<MemberQuizResponseDto.MemberQuizDto> memberQuizList;
+        private List<MemberQuizWithIsCorrectDto> memberQuizList;
     }
 }

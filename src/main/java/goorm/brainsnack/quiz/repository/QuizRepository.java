@@ -9,6 +9,6 @@ import java.util.List;
 
 public interface QuizRepository extends JpaRepository<Quiz, Long> {
 
-    List<Quiz> findAllByCategoryAndIsSimilar(QuizCategory category, Boolean isSimilar);
+    List<Quiz> findAllByCategory(QuizCategory category);
 
 }

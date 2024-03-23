@@ -7,13 +7,8 @@ import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 
 import java.util.List;
 
+import static goorm.brainsnack.quiz.dto.SimilarQuizResponseDto.*;
+
 public interface MemberService {
     MemberResponseDto.LoginDto login(String temporaryId);
-
-    MemberResponseDto.MemberDto findById(Long memberId);
-
-    List<MemberQuizResponseDto.MemberQuizDto> getWrongQuizList(Long memberId , String category);
-    List<MemberQuizResponseDto.MemberQuizDto> getCorrectQuizList(Long memberId , String category);
-
-    SimilarQuizResponseDto.MemberSimilarQuizDto getSimilarQuiz(Long memberId, Long quizId , String category);
 }

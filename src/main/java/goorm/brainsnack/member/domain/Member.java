@@ -5,6 +5,8 @@ import goorm.brainsnack.member.dto.MemberResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import static goorm.brainsnack.member.dto.MemberResponseDto.*;
+
 @Getter
 @Builder
 @Entity
@@ -13,29 +15,22 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Member extends BaseEntity {
 
-    @Id @GeneratedValue
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
-    private String temporaryId;
+    private String nickname;
 
     //생성 메서드
-    public static Member from(String temporaryId) {
+    public static Member from(String nickname) {
         return Member.builder()
-                .temporaryId(temporaryId)
+                .nickname(nickname)
                 .build();
     }
 
-    public static MemberResponseDto.LoginDto toMemberRequestDto(Member member) {
-        return MemberResponseDto.LoginDto.builder()
+    public static LoginDto toMemberRequestDto(Member member) {
+        return LoginDto.builder()
                 .id(member.id)
-                .entryCode(member.temporaryId)
-                .build();
-    }
-
-    public static MemberResponseDto.MemberDto toMemberDto(Member member) {
-        return MemberResponseDto.MemberDto.builder()
-                .id(member.id)
-                .entryCode(member.temporaryId)
+                .nickname(member.nickname)
                 .build();
     }
 }
