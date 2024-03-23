@@ -8,6 +8,7 @@ import goorm.brainsnack.member.domain.Member;
 import goorm.brainsnack.member.dto.MemberResponseDto;
 import goorm.brainsnack.member.repository.MemberRepository;
 import goorm.brainsnack.quiz.domain.*;
+import goorm.brainsnack.quiz.dto.MemberQuizResponseDto;
 import goorm.brainsnack.quiz.dto.QuizRequestDto;
 import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 import goorm.brainsnack.quiz.repository.MemberQuizRepository;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 
 import static goorm.brainsnack.quiz.domain.MemberQuiz.getMemberSimilarQuizDto;
 import static goorm.brainsnack.quiz.domain.MemberQuiz.getMemberSimilarQuizListDto;
+import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.*;
 import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.MemberQuizDto;
 import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.MemberQuizWithIsCorrectDto;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.MultiGradeRequestDto;
@@ -116,7 +118,7 @@ public class QuizServiceImpl implements QuizService {
         return MultiResultResponseDto.of(totalQuizCounts, wrongQuizCounts, results, category);
     }
 
-    @Override
+
     @Transactional
     public SimilarQuizSingleGradeDto gradeSingleSimilarQuiz(Long memberId, Long quizId , QuizRequestDto.SimilarQuizSingleGradeRequestDto request) {
         Member member = memberRepository.findById(memberId)
@@ -143,7 +145,8 @@ public class QuizServiceImpl implements QuizService {
 
         similarQuizRepository.save(similarQuiz);
 
-        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.toSimilarQuiz(request, member, similarQuiz , quiz.getId()));
+        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.toSimilarQuiz(request, member ,similarQuiz));
+
 
         return of(similarQuiz,memberQuiz);
     }
@@ -176,8 +179,9 @@ public class QuizServiceImpl implements QuizService {
         return SingleGradeDto.of(quiz, memberQuiz, data, getRatio(data));
     }
 
+
     @Override
-    public List<MemberQuizDto> getWrongQuizList(Long memberId, String category) {
+    public List<MemberQuizExistSimilarQuizDto> getWrongQuizList(Long memberId, String category) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
 
@@ -189,9 +193,8 @@ public class QuizServiceImpl implements QuizService {
                 .map(MemberQuiz::getMemberQuizDto)
                 .collect(Collectors.toList());
     }
-
     @Override
-    public List<MemberQuizDto> getCorrectQuizList(Long memberId, String category) {
+    public List<MemberQuizExistSimilarQuizDto> getCorrectQuizList(Long memberId, String category) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
         QuizCategory quizCategory = QuizCategory.getInstance(category);
@@ -203,8 +206,10 @@ public class QuizServiceImpl implements QuizService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
     public SimilarQuizResponseDto.MemberSimilarQuizDto getSimilarQuiz(Long memberId, String category, Long quizId) {
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
 
@@ -224,6 +229,17 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
+    public SimilarQuizSingleGradeDto getSingleSimilarQuizResult(Long memberId, Long similarQuizId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
+        SimilarQuiz similarQuiz = similarQuizRepository.findById(similarQuizId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
+
+        MemberQuiz memberQuiz = memberQuizRepository.findByMemberAndSimilarQuiz(member,similarQuiz);
+
+        return SimilarQuizSingleGradeDto.of(similarQuiz,memberQuiz);
+    }
+    @Override
     public SingleGradeDto getSingleResult(Long memberId, Long quizId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
@@ -238,10 +254,12 @@ public class QuizServiceImpl implements QuizService {
         return SingleGradeDto.of(quiz, memberQuiz, data, getRatio(data));
     }
 
-    private int getRatio(QuizData data) {
-        int ratio = 0;
+
+
+    private float getRatio(QuizData data) {
+        float ratio = 0;
         if (data.getQuizParticipantsCounts() != 0) {
-            ratio = data.getCorrectAnswerCounts() / data.getQuizParticipantsCounts() * 100;
+            ratio = (float) data.getCorrectAnswerCounts() / data.getQuizParticipantsCounts() * 100;
         }
         return ratio;
     }

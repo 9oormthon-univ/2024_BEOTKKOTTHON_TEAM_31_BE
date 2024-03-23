@@ -76,7 +76,7 @@ public class ChatGPTServiceImpl implements ChatGPTService {
                         similarQuiz.getTitle().equals("X") || similarQuiz.getTitle().isEmpty() ||
                         similarQuiz.getChoiceFirst().equals("X")  || similarQuiz.getChoiceSecond().equals("X") ||
                         similarQuiz.getChoiceThird().equals("X")  || similarQuiz.getChoiceFourth().equals("X") ||
-                        similarQuiz.getSolution().equals("X");
+                        similarQuiz.getSolution().equals("X") || similarQuiz.getAnswer() == 0;
         return hasEmptyField;
     }
 
