@@ -10,10 +10,10 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 
+
 @Configuration
 @Slf4j
 public class ChatGPTConfig {
-
     @Value("${openai.secret-key}")
     private String secretKey;
 
