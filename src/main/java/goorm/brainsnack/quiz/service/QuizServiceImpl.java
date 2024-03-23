@@ -71,7 +71,7 @@ public class QuizServiceImpl implements QuizService {
     public CategoryQuizListDto getCategoryQuizzes(String categoryName) {
         QuizCategory category = QuizCategory.getInstance(categoryName);
 
-        List<Quiz> quizzes = quizRepository.findAllByCategoryAndIsSimilar(category, false);
+        List<Quiz> quizzes = quizRepository.findAllByCategory(category);
 
         return CategoryQuizListDto.builder()
                 .size(quizzes.size())
@@ -155,7 +155,7 @@ public class QuizServiceImpl implements QuizService {
         List<MemberQuiz> memberQuizzes = memberQuizRepository.findAllByMemberAndCategory(member, QuizCategory.getInstance(categoryInput));
         QuizCategory category = QuizCategory.getInstance(categoryInput);
 
-        int totalQuizCounts = quizRepository.findAllByCategoryAndIsSimilar(category, false).size();
+        int totalQuizCounts = quizRepository.findAllByCategory(category).size();
         int wrongQuizCounts = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
 
         return MultiResultResponseDto.of(totalQuizCounts, wrongQuizCounts, memberQuizzes, category);

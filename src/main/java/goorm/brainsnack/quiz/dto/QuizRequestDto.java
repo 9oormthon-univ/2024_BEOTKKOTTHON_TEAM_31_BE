@@ -18,7 +18,6 @@ public class QuizRequestDto {
     public static class SingleGradeRequestDto {
         private Long quizId;
         private String category;
-        private Boolean isSimilar;
         private int choice;
     }
 

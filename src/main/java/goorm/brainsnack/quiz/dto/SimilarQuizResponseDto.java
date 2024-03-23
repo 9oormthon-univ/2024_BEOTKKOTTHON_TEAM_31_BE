@@ -13,7 +13,6 @@ public class SimilarQuizResponseDto {
     public static class CreateDto {
         private int quizNum;
         private String category;
-        private Boolean isSimilar;
         private String title;
         private String example;
         private String choiceFirst;
