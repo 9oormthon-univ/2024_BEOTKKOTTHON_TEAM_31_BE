@@ -22,7 +22,6 @@ public class Quiz extends BaseEntity {
 
     @Enumerated(STRING)
     private QuizCategory category;
-    private Boolean isSimilar;
 
     private String title;
     private String example;
@@ -40,7 +39,7 @@ public class Quiz extends BaseEntity {
     public static Quiz of(int quizNum, String title, String example,
                                       String choiceFirst, String choiceSecond, String choiceThird,
                                       String choiceFourth, String choiceFifth, int answer,
-                                      String solution, Boolean isSimilar, QuizCategory category) {
+                                      String solution, QuizCategory category) {
         return Quiz.builder()
                 .quizNum(quizNum)
                 .title(title)
@@ -52,7 +51,6 @@ public class Quiz extends BaseEntity {
                 .choiceFifth(choiceFifth)
                 .answer(answer)
                 .solution(solution)
-                .isSimilar(isSimilar)
                 .category(category)
                 .build();
     }

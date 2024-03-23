@@ -16,9 +16,8 @@ public class QuizRequestDto {
     @Getter
     @Builder
     public static class SingleGradeRequestDto {
-        private Long quizId;
+        private Long id;
         private String category;
-        private Boolean isSimilar;
         private int choice;
     }
 

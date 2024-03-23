@@ -18,26 +18,26 @@ public class Member extends BaseEntity {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "member_id")
     private Long id;
-    private String temporaryId;
+    private String nickname;
 
     //생성 메서드
-    public static Member from(String temporaryId) {
+    public static Member from(String nickname) {
         return Member.builder()
-                .temporaryId(temporaryId)
+                .nickname(nickname)
                 .build();
     }
 
     public static LoginDto toMemberRequestDto(Member member) {
         return LoginDto.builder()
                 .id(member.id)
-                .entryCode(member.temporaryId)
+                .nickname(member.nickname)
                 .build();
     }
 
     public static MemberDto toMemberDto(Member member) {
         return MemberDto.builder()
                 .id(member.id)
-                .entryCode(member.temporaryId)
+                .nickname(member.nickname)
                 .build();
     }
 }

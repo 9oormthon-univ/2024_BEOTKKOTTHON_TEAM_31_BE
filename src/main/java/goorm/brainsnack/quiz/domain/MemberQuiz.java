@@ -60,7 +60,7 @@ public class MemberQuiz extends BaseEntity {
                                                                    List<MemberQuizWithIsCorrectDto> result, int quizNum) {
         return MemberSimilarQuizDto.builder()
                 .memberId(member.getId())
-                .entryCode(member.getEntryCode())
+                .entryCode(member.getNickname())
                 .createSimilarQuizCount(result.size())
                 .quizNum(quizNum)
                 .memberQuizList(result)

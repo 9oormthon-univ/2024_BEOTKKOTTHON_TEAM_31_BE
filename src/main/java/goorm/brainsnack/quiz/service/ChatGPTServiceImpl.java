@@ -144,7 +144,6 @@ public class ChatGPTServiceImpl implements ChatGPTService {
                 .example(example)
                 .quizNum(quizDetailDto.getQuizNum())
                 .category(quizDetailDto.getCategory())
-                .isSimilar(Boolean.TRUE)
                 .build();
     }
 }
