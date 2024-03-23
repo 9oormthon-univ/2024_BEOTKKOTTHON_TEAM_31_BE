@@ -112,7 +112,7 @@ public class QuizServiceImpl implements QuizService {
         Quiz similarQuiz = Quiz.of((quizList.size()+1), request.getTitle(), request.getExample(),
                 request.getChoiceFirst(), request.getChoiceSecond(), request.getChoiceThird(),
                 request.getChoiceFourth(), request.getChoiceFifth(), request.getAnswer(), request.getSolution(),
-                Boolean.TRUE,quiz.getCategory());
+                quiz.getCategory());
         quizRepository.save(similarQuiz);
 
         MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.toSimilarQuiz(request, member, similarQuiz , quiz.getId()));
