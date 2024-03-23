@@ -13,6 +13,7 @@ import java.util.List;
 
 public interface SimilarQuizRepository extends JpaRepository<SimilarQuiz, Long> {
 
+
     List<SimilarQuiz> findAllByCategory(QuizCategory category);
 
     @Query("select sq from SimilarQuiz sq JOIN FETCH sq.quiz q WHERE sq.quiz = :quizId and sq.category = :category")

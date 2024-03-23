@@ -219,7 +219,7 @@ public class QuizServiceImpl implements QuizService {
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
 
         // 해당 유저가 푼 기존 문제에서 만들고 풀었던 유사 문제 조회
-        List<MemberQuiz> memberSimilarQuizList = memberQuizRepository.findMemberSimilarQuiz(member.getId(), quizCategory,quizId);
+        List<MemberQuiz> memberSimilarQuizList = memberQuizRepository.findMemberSimilarQuiz(member.getId(), quizCategory,quiz.getId());
 
         AtomicInteger count = new AtomicInteger(1);
         List<MemberQuizWithIsCorrectDto> memberQuizList = memberSimilarQuizList
@@ -230,8 +230,10 @@ public class QuizServiceImpl implements QuizService {
 
     @Override
     public SimilarQuizSingleGradeDto getSingleSimilarQuizResult(Long memberId, Long similarQuizId) {
+
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
+
         SimilarQuiz similarQuiz = similarQuizRepository.findById(similarQuizId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
 
