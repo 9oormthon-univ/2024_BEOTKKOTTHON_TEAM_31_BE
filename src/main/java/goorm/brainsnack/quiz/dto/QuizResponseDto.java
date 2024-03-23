@@ -154,7 +154,9 @@ public class QuizResponseDto {
         public static SimilarQuizSingleGradeDto of(SimilarQuiz similarQuiz, MemberQuiz memberQuiz) {
             return SimilarQuizSingleGradeDto.builder()
                     .id(similarQuiz.getId())
+
                     .quizNum(similarQuiz.getQuizNum())
+
                     .title(similarQuiz.getTitle())
                     .example(similarQuiz.getExample())
                     .choiceFirst(similarQuiz.getChoiceFirst())
