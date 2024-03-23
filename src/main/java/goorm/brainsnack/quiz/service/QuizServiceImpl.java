@@ -92,9 +92,6 @@ public class QuizServiceImpl implements QuizService {
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
         QuizCategory category = QuizCategory.getInstance(categoryInput);
 
-        int totalQuizCounts = quizRepository.findAllByCategory(category).size();
-        int wrongQuizCounts = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
-
         List<SingleResultResponseDto> results = new ArrayList<>();
         for (SingleGradeRequestDto gradeRequest : request.getGradeRequests()) {
             // 카테고리 입력 검증
@@ -112,6 +109,10 @@ public class QuizServiceImpl implements QuizService {
                 results.add(SingleResultResponseDto.from(gradeSingleQuiz(memberId, gradeRequest.getId(), gradeRequest)));
             }
         }
+
+        int totalQuizCounts = quizRepository.findAllByCategory(category).size();
+        int wrongQuizCounts = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
+
         return MultiResultResponseDto.of(totalQuizCounts, wrongQuizCounts, results, category);
     }
 
