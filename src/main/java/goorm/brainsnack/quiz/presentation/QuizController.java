@@ -80,16 +80,6 @@ public class QuizController {
     }
 
 
-    //한 문제 채점
-//    @PostMapping("/members/{member-id}/quiz/{quiz-id}/grade")
-//    public ResponseEntity<BaseResponse<SingleGradeDto>> gradeSingleQuiz(@PathVariable("member-id") Long memberId,
-//                                                                        @PathVariable("quiz-id") Long quizId,
-//                                                                        @RequestBody SingleGradeRequestDto request) {
-//        return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeSingleQuiz(memberId, quizId, request)));
-//    }
-
-
-
     //영역별 모든 문제 조회
     @GetMapping("/members/{member-id}/quizzes/{category}")
     public ResponseEntity<BaseResponse<CategoryQuizListDto>> getCategoryQuizzes(@PathVariable("member-id") Long memberId,
