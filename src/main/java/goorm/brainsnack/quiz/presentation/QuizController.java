@@ -17,6 +17,7 @@ import java.util.List;
 
 import static goorm.brainsnack.quiz.dto.ChatGPTRequestDto.ChatCompletionDto;
 import static goorm.brainsnack.quiz.dto.ChatGPTRequestDto.ChatRequestMsgDto;
+import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.*;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.MultiGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 import static goorm.brainsnack.quiz.dto.SimilarQuizResponseDto.CreateDto;
@@ -76,7 +77,7 @@ public class QuizController {
     public ResponseEntity<BaseResponse<SimilarQuizSingleGradeDto>> gradeSingleQuiz(@PathVariable("member-id") Long memberId,
                                                                                    @PathVariable("quiz-id") Long quizId,
                                                                                    @RequestBody SimilarQuizSingleGradeRequestDto request) {
-        return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeSingleSimilarQuiz(memberId, quizId , request)));
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeSingleSimilarQuiz(memberId, quizId,request)));
     }
 
 
@@ -117,18 +118,25 @@ public class QuizController {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.getSingleResult(memberId, quizId)));
     }
 
+    // 유사 문제 해설 조회
+    @GetMapping("/members/{member-id}/similar-quiz/{similar-quiz-id}/answer")
+    public ResponseEntity<BaseResponse<SimilarQuizSingleGradeDto>> getSimilarSingleResult(@PathVariable("member-id") Long memberId,
+                                                                                @PathVariable("similar-quiz-id") Long similarQuizId) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getSingleSimilarQuizResult(memberId, similarQuizId)));
+    }
+
 
     // 내가 틀린 문제 조회 (기존 문제)
     @GetMapping("/members/{member-id}/quiz/wrong/{category}")
-    public ResponseEntity<BaseResponse<List<MemberQuizResponseDto.MemberQuizDto>>> getWrongQuizList(@PathVariable("member-id") Long memberId,
-                                                                                                    @PathVariable String category) {
+    public ResponseEntity<BaseResponse<List<MemberQuizExistSimilarQuizDto>>> getWrongQuizList(@PathVariable("member-id") Long memberId,
+                                                                                              @PathVariable String category) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.getWrongQuizList(memberId,category)));
     }
 
     // 내가 맞은 문제 조회 (기존 문제)
     @GetMapping("/members/{member-id}/quiz/correct/{category}")
-    public ResponseEntity<BaseResponse<List<MemberQuizResponseDto.MemberQuizDto>>> getCorrectQuizList(@PathVariable("member-id") Long memberId,
-                                                                                                      @PathVariable String category) {
+    public ResponseEntity<BaseResponse<List<MemberQuizExistSimilarQuizDto>>> getCorrectQuizList(@PathVariable("member-id") Long memberId,
+                                                                                                @PathVariable String category) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.getCorrectQuizList(memberId,category)));
     }
 
