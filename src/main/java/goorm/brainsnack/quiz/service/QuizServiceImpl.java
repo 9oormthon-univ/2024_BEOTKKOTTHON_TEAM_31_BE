@@ -213,6 +213,22 @@ public class QuizServiceImpl implements QuizService {
                 .toList();
         return getMemberSimilarQuizListDto(findMember,memberQuizList,quiz.getQuizNum());
     }
+
+    @Override
+    public SingleGradeDto getSingleResult(Long memberId, Long quizId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
+
+        MemberQuiz memberQuiz = memberQuizRepository.findByMemberAndQuiz(member, quiz)
+                .orElseThrow(() -> new BaseException(ErrorCode.UNSOLVED_QUIZ));
+        QuizData data = dataRepository.findByQuiz(quiz)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_FOUND));
+
+        return SingleGradeDto.of(quiz, memberQuiz, data, getRatio(data));
+    }
+
     private int getRatio(QuizData data) {
         int ratio = 0;
         if (data.getQuizParticipantsCounts() != 0) {

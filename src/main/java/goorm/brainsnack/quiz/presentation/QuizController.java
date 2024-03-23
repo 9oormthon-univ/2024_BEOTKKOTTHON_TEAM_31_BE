@@ -105,6 +105,12 @@ public class QuizController {
                                                                                    @RequestBody SimilarQuizSingleGradeRequestDto request) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeSingleSimilarQuiz(memberId, quizId , request)));
     }
+    // 한 문제 해설 조회
+    @GetMapping("/members/{member-id}/quiz/{quiz-id}")
+    public ResponseEntity<BaseResponse<SingleGradeDto>> getSingleResult(@PathVariable("member-id") Long memberId,
+                                                                        @PathVariable("quiz-id") Long quizId) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getSingleResult(memberId, quizId)));
+    }
 
 //    //전체 문제 채점 결과 리스트 조회
 //    @GetMapping("/members/{member-id}/quizzes/{category}/grade")

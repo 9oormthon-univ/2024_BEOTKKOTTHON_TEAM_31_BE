@@ -20,4 +20,6 @@ public interface QuizService {
     List<MemberQuizDto> getWrongQuizList(Long memberId , String category);
     List<MemberQuizDto> getCorrectQuizList(Long memberId , String category);
     MemberSimilarQuizDto getSimilarQuiz(Long memberId, String category , Long quizId);
+
+    SingleGradeDto getSingleResult(Long memberId, Long quizId);
 }
