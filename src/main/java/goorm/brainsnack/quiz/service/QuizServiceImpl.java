@@ -131,9 +131,11 @@ public class QuizServiceImpl implements QuizService {
         /**
          * quizNum 을 지정해주기 위해서 가져오는 코드
          */
-        List<Quiz> quizList = quizRepository.findAllByCategory(quiz.getCategory());
+        List<SimilarQuiz> similarQuizList = similarQuizRepository.findAllByCategory(quiz.getCategory());
 
-        SimilarQuiz similarQuiz = SimilarQuiz.of(quiz,(quizList.size() + 1), request.getTitle(), request.getExample(),
+        int similarQuizNum = similarQuizList.size()+1;
+
+        SimilarQuiz similarQuiz = SimilarQuiz.of(quiz,similarQuizNum, request.getTitle(), request.getExample(),
                 request.getChoiceFirst(), request.getChoiceSecond(), request.getChoiceThird(),
                 request.getChoiceFourth(), request.getChoiceFifth(), request.getAnswer(), request.getSolution(),
                 quiz.getCategory());
