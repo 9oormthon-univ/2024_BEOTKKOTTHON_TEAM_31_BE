@@ -101,9 +101,10 @@ public class QuizServiceImpl implements QuizService {
             //    if (!gradeRequest.getCategory().equals(category)) {
 //                throw new BaseException(ErrorCode.CATEGORY_CONFLICT);
 //            }
-
+            Quiz quiz = quizRepository.findById(gradeRequest.getId())
+                    .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
             // 이미 풀이한 문제는 결과 가져오기
-            Optional<MemberQuiz> memberQuiz = memberQuizRepository.findById(gradeRequest.getId());
+            Optional<MemberQuiz> memberQuiz = memberQuizRepository.findByMemberAndQuiz(member, quiz);
             log.info("mq-{}: {}", gradeRequest.getId(), memberQuiz.isPresent());
             if (memberQuiz.isPresent()) {
                 results.add(SingleResultResponseDto.from(memberQuiz.get()));
