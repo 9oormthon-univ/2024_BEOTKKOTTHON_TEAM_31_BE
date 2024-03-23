@@ -92,9 +92,6 @@ public class QuizServiceImpl implements QuizService {
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
         QuizCategory category = QuizCategory.getInstance(categoryInput);
 
-        int totalQuizCounts = quizRepository.findAllByCategory(category).size();
-        int wrongQuizCounts = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
-
         List<SingleResultResponseDto> results = new ArrayList<>();
         for (SingleGradeRequestDto gradeRequest : request.getGradeRequests()) {
             // 카테고리 입력 검증
@@ -112,6 +109,10 @@ public class QuizServiceImpl implements QuizService {
                 results.add(SingleResultResponseDto.from(gradeSingleQuiz(memberId, gradeRequest.getId(), gradeRequest)));
             }
         }
+
+        int totalQuizCounts = quizRepository.findAllByCategory(category).size();
+        int wrongQuizCounts = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
+
         return MultiResultResponseDto.of(totalQuizCounts, wrongQuizCounts, results, category);
     }
 
@@ -131,9 +132,11 @@ public class QuizServiceImpl implements QuizService {
         /**
          * quizNum 을 지정해주기 위해서 가져오는 코드
          */
-        List<Quiz> quizList = quizRepository.findAllByCategory(quiz.getCategory());
+        List<SimilarQuiz> similarQuizList = similarQuizRepository.findAllByCategory(quiz.getCategory());
 
-        SimilarQuiz similarQuiz = SimilarQuiz.of(quiz,(quizList.size() + 1), request.getTitle(), request.getExample(),
+        int similarQuizNum = similarQuizList.size()+1;
+
+        SimilarQuiz similarQuiz = SimilarQuiz.of(quiz,similarQuizNum, request.getTitle(), request.getExample(),
                 request.getChoiceFirst(), request.getChoiceSecond(), request.getChoiceThird(),
                 request.getChoiceFourth(), request.getChoiceFifth(), request.getAnswer(), request.getSolution(),
                 quiz.getCategory());

@@ -10,6 +10,6 @@ import java.util.Optional;
 
 public interface QuizDataRepository extends JpaRepository<QuizData, Long> {
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
+//    @Lock(LockModeType.PESSIMISTIC_WRITE)
     Optional<QuizData> findByQuiz(Quiz quiz);
 }
