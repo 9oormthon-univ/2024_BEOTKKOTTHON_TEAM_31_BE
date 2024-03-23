@@ -17,10 +17,4 @@ public class MemberResponseDto {
     public static class MainViewDto {
         private int quizNum;
     }
-
-    @Getter @Builder
-    public static class MemberDto {
-        private Long id;
-        private String nickname;
-    }
 }

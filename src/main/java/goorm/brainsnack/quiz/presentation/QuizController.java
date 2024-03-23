@@ -38,6 +38,21 @@ public class QuizController {
             "해설을 1개만 만들어줘. 양식은 위에처럼 문제 , 예시 , 1번 , 2번 , 3번 , 4번 , 5번 , 정답 , 해설대로 해주고 각 항목당 줄바꿈은 한 번씩 해줘" +
             "정답이 꼭 존재하는 문제로 만들어줘";
 
+    private static String createQuizTitle(QuizDetailDto quizDto) {
+        String content;
+        if (quizDto.getExample().equals("X")) {
+            content = "문제 : " + quizDto.getTitle() + "\n" + "1번 : " + quizDto.getChoiceFirst() + "\n" +
+                    "2번 : " + quizDto.getChoiceSecond() + "\n" + "3번 : " + quizDto.getChoiceThird() + "\n" + "4번 : " + quizDto.getChoiceFourth() + "\n" +
+                    "5번 : " + quizDto.getChoiceFifth() + "\n" + "정답 : " + quizDto.getAnswer() + "\n" + "해설 : " + quizDto.getSolution() + "\n" + COMMENT_NO_EXAMPLE;
+        } else {
+            content = "문제 : " + quizDto.getTitle() + "\n" + "예시 : " + quizDto.getExample() + "\n" + "1번 : " + quizDto.getChoiceFirst() + "\n" +
+                    "2번 : " + quizDto.getChoiceSecond() + "\n" + "3번 : " + quizDto.getChoiceThird() + "\n" + "4번 : " + quizDto.getChoiceFourth() + "\n" +
+                    "5번 : " + quizDto.getChoiceFifth() + "\n" + "정답 : " + quizDto.getAnswer() + "\n" + "해설 : " + quizDto.getSolution() + "\n" + COMMENT_WITH_EXAMPLE;
+        }
+        return content;
+    }
+
+
     // 유사 문제 생성
     @GetMapping("/quiz/{quiz-id}/similar-quiz")
     public ResponseEntity<BaseResponse<CreateDto>> createSimilarQuiz(@PathVariable("quiz-id") Long quizId) {
@@ -56,19 +71,14 @@ public class QuizController {
         return ResponseEntity.ok(new BaseResponse<>(result));
     }
 
-    private static String createQuizTitle(QuizDetailDto quizDto) {
-        String content;
-        if (quizDto.getExample().equals("X")) {
-            content = "문제 : " + quizDto.getTitle() + "\n" + "1번 : " + quizDto.getChoiceFirst() + "\n" +
-                    "2번 : " + quizDto.getChoiceSecond() + "\n" + "3번 : " + quizDto.getChoiceThird() + "\n" + "4번 : " + quizDto.getChoiceFourth() + "\n" +
-                    "5번 : " + quizDto.getChoiceFifth() + "\n" + "정답 : " + quizDto.getAnswer() + "\n" + "해설 : " + quizDto.getSolution() + "\n" + COMMENT_NO_EXAMPLE;
-        } else {
-            content = "문제 : " + quizDto.getTitle() + "\n" + "예시 : " + quizDto.getExample() + "\n" + "1번 : " + quizDto.getChoiceFirst() + "\n" +
-                    "2번 : " + quizDto.getChoiceSecond() + "\n" + "3번 : " + quizDto.getChoiceThird() + "\n" + "4번 : " + quizDto.getChoiceFourth() + "\n" +
-                    "5번 : " + quizDto.getChoiceFifth() + "\n" + "정답 : " + quizDto.getAnswer() + "\n" + "해설 : " + quizDto.getSolution() + "\n" + COMMENT_WITH_EXAMPLE;
-        }
-        return content;
+    // 유사문제 문제 채점 (오직 한 문제만)
+    @PostMapping("/members/{member-id}/similar-quiz/{quiz-id}/grade")
+    public ResponseEntity<BaseResponse<SimilarQuizSingleGradeDto>> gradeSingleQuiz(@PathVariable("member-id") Long memberId,
+                                                                                   @PathVariable("quiz-id") Long quizId,
+                                                                                   @RequestBody SimilarQuizSingleGradeRequestDto request) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeSingleSimilarQuiz(memberId, quizId , request)));
     }
+
 
     //영역별 모든 문제 조회
     @GetMapping("/members/{member-id}/quizzes/{category}")
@@ -99,13 +109,6 @@ public class QuizController {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeMultiQuiz(memberId, category, request)));
     }
 
-    // 유사문제 문제 채점 (오직 한 문제만)
-    @PostMapping("/members/{member-id}/similar-quiz/{quiz-id}/grade")
-    public ResponseEntity<BaseResponse<SimilarQuizSingleGradeDto>> gradeSingleQuiz(@PathVariable("member-id") Long memberId,
-                                                                                   @PathVariable("quiz-id") Long quizId,
-                                                                                   @RequestBody SimilarQuizSingleGradeRequestDto request) {
-        return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeSingleSimilarQuiz(memberId, quizId , request)));
-    }
 
     // 한 문제 해설 조회
     @GetMapping("/members/{member-id}/quiz/{quiz-id}/answer")
@@ -114,31 +117,25 @@ public class QuizController {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.getSingleResult(memberId, quizId)));
     }
 
-//    //전체 문제 채점 결과 리스트 조회
-//    @GetMapping("/members/{member-id}/quizzes/{category}/grade")
-//    public ResponseEntity<BaseResponse<MultiResultResponseDto>> getFullQuizResult(@PathVariable("member-id") Long memberId,
-//                                                                                  @PathVariable("category") String category) {
-//        return ResponseEntity.ok().body(new BaseResponse<>(quizService.MultiResultResponseDto(memberId, category)));
-//    }
 
     // 내가 틀린 문제 조회 (기존 문제)
-    @GetMapping("/members/{memberId}/quiz/wrong/{category}")
-    public ResponseEntity<BaseResponse<List<MemberQuizResponseDto.MemberQuizDto>>> getWrongQuizList(@PathVariable Long memberId,
+    @GetMapping("/members/{member-id}/quiz/wrong/{category}")
+    public ResponseEntity<BaseResponse<List<MemberQuizResponseDto.MemberQuizDto>>> getWrongQuizList(@PathVariable("member-id") Long memberId,
                                                                                                     @PathVariable String category) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.getWrongQuizList(memberId,category)));
     }
 
     // 내가 맞은 문제 조회 (기존 문제)
-    @GetMapping("/members/{memberId}/quiz/correct/{category}")
-    public ResponseEntity<BaseResponse<List<MemberQuizResponseDto.MemberQuizDto>>> getCorrectQuizList(@PathVariable Long memberId,
+    @GetMapping("/members/{member-id}/quiz/correct/{category}")
+    public ResponseEntity<BaseResponse<List<MemberQuizResponseDto.MemberQuizDto>>> getCorrectQuizList(@PathVariable("member-id") Long memberId,
                                                                                                       @PathVariable String category) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.getCorrectQuizList(memberId,category)));
     }
 
     // 내가 생성한 유사 문제 조회
-    @GetMapping("/members/{memberId}/similar-quiz/{quizId}/{category}")
-    public ResponseEntity<BaseResponse<MemberSimilarQuizDto>> getSimilarQuizList(@PathVariable Long memberId,
-                                                                                 @PathVariable Long quizId,
+    @GetMapping("/members/{member-id}/similar-quiz/{quiz-id}/{category}")
+    public ResponseEntity<BaseResponse<MemberSimilarQuizDto>> getSimilarQuizList(@PathVariable("member-id") Long memberId,
+                                                                                 @PathVariable("quiz-id") Long quizId,
                                                                                  @PathVariable String category) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.getSimilarQuiz(memberId,category,quizId)));
     }

@@ -38,4 +38,24 @@ public class SimilarQuiz extends BaseEntity {
 
     @Column(length = 500)
     private String solution;
+
+    public static SimilarQuiz of(Quiz quiz,int quizNum, String title, String example,
+                          String choiceFirst, String choiceSecond, String choiceThird,
+                          String choiceFourth, String choiceFifth, int answer,
+                          String solution, QuizCategory category) {
+        return SimilarQuiz.builder()
+                .quiz(quiz)
+                .quizNum(quizNum)
+                .title(title)
+                .example(example)
+                .choiceFirst(choiceFirst)
+                .choiceSecond(choiceSecond)
+                .choiceThird(choiceThird)
+                .choiceFourth(choiceFourth)
+                .choiceFifth(choiceFifth)
+                .answer(answer)
+                .solution(solution)
+                .category(category)
+                .build();
+    }
 }

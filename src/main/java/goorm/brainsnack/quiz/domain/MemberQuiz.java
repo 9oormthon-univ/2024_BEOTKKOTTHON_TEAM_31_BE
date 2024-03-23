@@ -32,19 +32,18 @@ public class MemberQuiz extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "similarQuiz_id")
+    private SimilarQuiz similarQuiz;
+
     private Boolean isCorrect;
     private int choice;
-
-    /**
-     * 풀었던 유사 문제 조회를 하기 위해서 필요한 필드
-     * 유사 문제가 만들어질 때 어떤 문제로부터 만들어졌는지에 대한 정보를 담아둬야 추적이 가능하다.
-     */
-    private Long basedQuizId;
 
     public static MemberQuizDto getMemberQuizDto(MemberQuiz memberQuiz) {
         return MemberQuizDto.builder()
                 .quizNum(memberQuiz.getQuiz().getQuizNum())
-                .quizId(memberQuiz.getQuiz().getId())
+                .id(memberQuiz.getQuiz().getId())
                 .build();
     }
 
@@ -52,12 +51,11 @@ public class MemberQuiz extends BaseEntity {
         return MemberQuizWithIsCorrectDto.builder()
                 .isCorrect(memberQuiz.getIsCorrect())
                 .quizNum(count)
-                .quizId(memberQuiz.getQuiz().getId())
+                .id(memberQuiz.getId())
                 .build();
     }
 
-    public static MemberSimilarQuizDto getMemberSimilarQuizListDto(MemberResponseDto.MemberDto member,
-                                                                   List<MemberQuizWithIsCorrectDto> result, int quizNum) {
+    public static MemberSimilarQuizDto getMemberSimilarQuizListDto(Member member, List<MemberQuizWithIsCorrectDto> result, int quizNum) {
         return MemberSimilarQuizDto.builder()
                 .memberId(member.getId())
                 .entryCode(member.getNickname())
@@ -82,16 +80,15 @@ public class MemberQuiz extends BaseEntity {
                 .build();
     }
 
-    public static MemberQuiz toSimilarQuiz(SimilarQuizSingleGradeRequestDto request, Member member, Quiz quiz , Long basedQuizId) {
+    public static MemberQuiz toSimilarQuiz(SimilarQuizSingleGradeRequestDto request, Member member, SimilarQuiz similarQuiz , Long basedQuizId) {
 
         boolean userCorrect = false;
-        if (quiz.getAnswer() == request.getChoice()) {
+        if (similarQuiz.getAnswer() == request.getChoice()) {
             userCorrect = true;
         }
         return MemberQuiz.builder()
                 .member(member)
-                .quiz(quiz)
-                .basedQuizId(basedQuizId)
+                .similarQuiz(similarQuiz)
                 .isCorrect(userCorrect)
                 .choice(request.getChoice())
                 .build();
