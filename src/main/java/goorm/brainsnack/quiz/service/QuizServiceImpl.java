@@ -105,7 +105,7 @@ public class QuizServiceImpl implements QuizService {
 
             // 이미 풀이한 문제는 결과 가져오기
             Optional<MemberQuiz> memberQuiz = memberQuizRepository.findById(gradeRequest.getId());
-            log.info("mq - {} : 있음? {}", gradeRequest.getId(), memberQuiz.isPresent());
+            log.info("mq-{}: {}", gradeRequest.getId(), memberQuiz.isPresent());
             if (memberQuiz.isPresent()) {
                 results.add(SingleResultResponseDto.from(memberQuiz.get()));
             } else {
