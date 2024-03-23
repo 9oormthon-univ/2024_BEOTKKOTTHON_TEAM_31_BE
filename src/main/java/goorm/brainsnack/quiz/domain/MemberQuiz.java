@@ -56,8 +56,8 @@ public class MemberQuiz extends BaseEntity {
                 .build();
     }
 
-    public static MemberSimilarQuizDto getMemberSimilarQuizListDto(MemberResponseDto.MemberDto member ,
-                                                                                          List<MemberQuizWithIsCorrectDto> result, int quizNum) {
+    public static MemberSimilarQuizDto getMemberSimilarQuizListDto(MemberResponseDto.MemberDto member,
+                                                                   List<MemberQuizWithIsCorrectDto> result, int quizNum) {
         return MemberSimilarQuizDto.builder()
                 .memberId(member.getId())
                 .entryCode(member.getEntryCode())

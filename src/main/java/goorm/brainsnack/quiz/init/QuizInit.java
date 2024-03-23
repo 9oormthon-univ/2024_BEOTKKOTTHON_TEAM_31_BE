@@ -47,6 +47,7 @@ public class QuizInit {
         public void init() throws FileNotFoundException {
             try{
 
+                // EC2 에서 읽지 못함
                 String excelFilePath = "src/main/java/goorm/brainsnack/quiz/init/data-init.xlsx";
                 FileInputStream fileInputStream = new FileInputStream(new File(excelFilePath));
 

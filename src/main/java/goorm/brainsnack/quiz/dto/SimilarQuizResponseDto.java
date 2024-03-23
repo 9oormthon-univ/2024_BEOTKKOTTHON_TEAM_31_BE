@@ -27,7 +27,6 @@ public class SimilarQuizResponseDto {
 
     @Builder @Getter
     public static class MemberSimilarQuizDto {
-        // Member 관련된 필드
         private Long memberId;
         private String entryCode;
         // 유사 문제를 생성했을 때 어떤 카테고리의 quizNum 문제를 사용했는지

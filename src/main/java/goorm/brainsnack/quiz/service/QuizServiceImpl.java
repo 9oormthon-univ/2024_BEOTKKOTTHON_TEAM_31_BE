@@ -5,12 +5,15 @@ import goorm.brainsnack.exception.BaseException;
 import goorm.brainsnack.exception.ErrorCode;
 import goorm.brainsnack.exception.QuizException;
 import goorm.brainsnack.member.domain.Member;
+import goorm.brainsnack.member.dto.MemberResponseDto;
 import goorm.brainsnack.member.repository.MemberRepository;
 import goorm.brainsnack.quiz.domain.MemberQuiz;
 import goorm.brainsnack.quiz.domain.Quiz;
 import goorm.brainsnack.quiz.domain.QuizCategory;
 import goorm.brainsnack.quiz.domain.QuizData;
+import goorm.brainsnack.quiz.dto.MemberQuizResponseDto;
 import goorm.brainsnack.quiz.dto.QuizRequestDto;
+import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 import goorm.brainsnack.quiz.repository.MemberQuizRepository;
 import goorm.brainsnack.quiz.repository.QuizDataRepository;
 import goorm.brainsnack.quiz.repository.QuizRepository;
@@ -21,7 +24,12 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
+import static goorm.brainsnack.quiz.domain.MemberQuiz.getMemberSimilarQuizDto;
+import static goorm.brainsnack.quiz.domain.MemberQuiz.getMemberSimilarQuizListDto;
+import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.*;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.MultiGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
@@ -41,7 +49,6 @@ public class QuizServiceImpl implements QuizService {
     public QuizDetailDto findQuiz(Long quizId) {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new QuizException(ErrorCode.NOT_EXIST_QUIZ));
-        // 여기서 DTO 로 반환해서 Controller 에게 넘겨주기
         return QuizDetailDto.from(quiz);
     }
     
@@ -102,14 +109,12 @@ public class QuizServiceImpl implements QuizService {
          */
         List<Quiz> quizList = quizRepository.findAllByCategory(quiz.getCategory());
 
-        // 유사 문제 채점했기 떄문에 이때 저장
         Quiz similarQuiz = Quiz.of((quizList.size()+1), request.getTitle(), request.getExample(),
                 request.getChoiceFirst(), request.getChoiceSecond(), request.getChoiceThird(),
                 request.getChoiceFourth(), request.getChoiceFifth(), request.getAnswer(), request.getSolution(),
                 Boolean.TRUE,quiz.getCategory());
         quizRepository.save(similarQuiz);
 
-        // MemberQuiz 에도 저장
         MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.toSimilarQuiz(request, member, similarQuiz , quiz.getId()));
 
         return of(similarQuiz,memberQuiz);
@@ -156,7 +161,55 @@ public class QuizServiceImpl implements QuizService {
         return MultiResultResponseDto.of(totalQuizCounts, wrongQuizCounts, memberQuizzes, category);
     }
 
+    @Override
+    public List<MemberQuizDto> getWrongQuizList(Long memberId, String category) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
 
+        QuizCategory quizCategory = QuizCategory.getInstance(category);
+
+        List<MemberQuizDto> result = memberQuizRepository
+                .findMemberQuizList(member.getId(), quizCategory).stream()
+                .filter(memberQuiz -> !memberQuiz.getIsCorrect())
+                .map(MemberQuiz::getMemberQuizDto)
+                .collect(Collectors.toList());
+        return result;
+    }
+
+    @Override
+    public List<MemberQuizDto> getCorrectQuizList(Long memberId, String category) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
+        QuizCategory quizCategory = QuizCategory.getInstance(category);
+
+        List<MemberQuizDto> result = memberQuizRepository
+                .findMemberQuizList(member.getId(), quizCategory).stream()
+                .filter(MemberQuiz::getIsCorrect)
+                .map(MemberQuiz::getMemberQuizDto)
+                .collect(Collectors.toList());
+        return result;
+    }
+
+    @Override
+    public SimilarQuizResponseDto.MemberSimilarQuizDto getSimilarQuiz(Long memberId, String category, Long quizId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
+
+        MemberResponseDto.MemberDto findMember = Member.toMemberDto(member);
+
+        QuizCategory quizCategory = QuizCategory.getInstance(category);
+
+        Quiz quiz = quizRepository.findById(quizId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
+
+        List<MemberQuiz> memberSimilarQuizList = memberQuizRepository.findMemberSimilarQuiz(findMember.getId(), quizCategory,quizId);
+        AtomicInteger count = new AtomicInteger(1);
+
+        List<MemberQuizWithIsCorrectDto> memberQuizList = memberSimilarQuizList
+                .stream().map(memberQuiz -> getMemberSimilarQuizDto(memberQuiz, count.getAndIncrement()))
+                .toList();
+        return getMemberSimilarQuizListDto(findMember,memberQuizList,quiz.getQuizNum());
+    }
     private int getRatio(QuizData data) {
         int ratio = 0;
         if (data.getQuizParticipantsCounts() != 0) {
@@ -164,4 +217,5 @@ public class QuizServiceImpl implements QuizService {
         }
         return ratio;
     }
+
 }
