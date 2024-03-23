@@ -88,20 +88,27 @@ public class QuizServiceImpl implements QuizService {
     public MultiResultResponseDto gradeMultiQuiz(Long memberId, String categoryInput, MultiGradeRequestDto request) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
-        List<MemberQuiz> memberQuizzes = memberQuizRepository.findAllByMemberAndCategory(member, QuizCategory.getInstance(categoryInput));
         QuizCategory category = QuizCategory.getInstance(categoryInput);
 
         int totalQuizCounts = quizRepository.findAllByCategory(category).size();
         int wrongQuizCounts = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
 
-        List<SingleGradeDto> results = new ArrayList<>();
+        List<SingleResultResponseDto> results = new ArrayList<>();
         for (SingleGradeRequestDto gradeRequest : request.getGradeRequests()) {
-//            if (!gradeRequest.getCategory().equals(category)) {
+            // 카테고리 입력 검증
+            //    if (!gradeRequest.getCategory().equals(category)) {
 //                throw new BaseException(ErrorCode.CATEGORY_CONFLICT);
 //            }
-            results.add(gradeSingleQuiz(memberId, gradeRequest.getId(), gradeRequest));
+
+            // 이미 풀이한 문제는 결과 가져오기
+            Optional<MemberQuiz> memberQuiz = memberQuizRepository.findById(gradeRequest.getId());
+            if (memberQuiz.isPresent()) {
+                results.add(SingleResultResponseDto.from(memberQuiz.get()));
+            } else {
+                results.add(SingleResultResponseDto.from(gradeSingleQuiz(memberId, gradeRequest.getId(), gradeRequest)));
+            }
         }
-        return MultiResultResponseDto.of(totalQuizCounts, wrongQuizCounts, memberQuizzes, category);
+        return MultiResultResponseDto.of(totalQuizCounts, wrongQuizCounts, results, category);
     }
 
     @Override

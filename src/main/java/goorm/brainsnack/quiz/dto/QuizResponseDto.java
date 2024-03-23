@@ -216,14 +216,12 @@ public class QuizResponseDto {
         private String category;
         private List<SingleResultResponseDto> resultList;
 
-        public static MultiResultResponseDto of(int totalQuizCounts, int wrongQuizCounts, List<MemberQuiz> memberQuizzes, QuizCategory category) {
+        public static MultiResultResponseDto of(int totalQuizCounts, int wrongQuizCounts, List<SingleResultResponseDto> resultList, QuizCategory category) {
             return MultiResultResponseDto.builder()
                     .totalQuizCounts(totalQuizCounts)
                     .wrongQuizCounts(wrongQuizCounts)
                     .category(category.name())
-                    .resultList(memberQuizzes.stream()
-                            .map(SingleResultResponseDto::from)
-                            .toList())
+                    .resultList(resultList)
                     .build();
         }
     }
@@ -235,6 +233,14 @@ public class QuizResponseDto {
         private int quizNum;
         private Boolean isCorrect;
 
+        public static SingleResultResponseDto from(SingleGradeDto singleGrade) {
+            return SingleResultResponseDto.builder()
+                    .id(singleGrade.getId())
+                    .quizNum(singleGrade.getQuizNum())
+                    .isCorrect(singleGrade.getIsCorrect())
+                    .build();
+        }
+
         public static SingleResultResponseDto from(MemberQuiz memberQuiz) {
             Quiz quiz = memberQuiz.getQuiz();
             Long quizId = quiz.getId();
@@ -244,7 +250,6 @@ public class QuizResponseDto {
                     .quizNum(quiz.getQuizNum())
                     .isCorrect(memberQuiz.getIsCorrect())
                     .build();
-
         }
     }
 }
