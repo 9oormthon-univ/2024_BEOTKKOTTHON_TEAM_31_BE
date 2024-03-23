@@ -154,9 +154,7 @@ public class QuizResponseDto {
         public static SimilarQuizSingleGradeDto of(SimilarQuiz similarQuiz, MemberQuiz memberQuiz) {
             return SimilarQuizSingleGradeDto.builder()
                     .id(similarQuiz.getId())
-
                     .quizNum(similarQuiz.getQuizNum())
-
                     .title(similarQuiz.getTitle())
                     .example(similarQuiz.getExample())
                     .choiceFirst(similarQuiz.getChoiceFirst())
@@ -192,9 +190,9 @@ public class QuizResponseDto {
 
         private int quizParticipantsCounts;
         private int correctAnswerCounts;
-        private int ratioOfCorrect;
+        private float ratioOfCorrect;
 
-        public static SingleGradeDto of(Quiz quiz, MemberQuiz memberQuiz, QuizData data, int ratio) {
+        public static SingleGradeDto of(Quiz quiz, MemberQuiz memberQuiz, QuizData data, float ratio) {
             return SingleGradeDto.builder()
                     .id(quiz.getId())
                     .quizNum(quiz.getQuizNum())
@@ -215,6 +213,7 @@ public class QuizResponseDto {
                     .build();
         }
     }
+
 
     @Getter
     @Builder

@@ -6,6 +6,7 @@ import goorm.brainsnack.member.dto.MemberResponseDto;
 import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.slf4j.Slf4j;
 
 import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.*;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
@@ -19,6 +20,7 @@ import java.util.List;
 @Table(name = "MemberQuiz_TB")
 @AllArgsConstructor(access= AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Slf4j
 public class MemberQuiz extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,8 +42,9 @@ public class MemberQuiz extends BaseEntity {
     private Boolean isCorrect;
     private int choice;
 
-    public static MemberQuizDto getMemberQuizDto(MemberQuiz memberQuiz) {
-        return MemberQuizDto.builder()
+    public static MemberQuizExistSimilarQuizDto getMemberQuizDto(MemberQuiz memberQuiz) {
+
+        return MemberQuizExistSimilarQuizDto.builder()
                 .quizNum(memberQuiz.getQuiz().getQuizNum())
                 .id(memberQuiz.getQuiz().getId())
                 .build();
@@ -80,7 +83,7 @@ public class MemberQuiz extends BaseEntity {
                 .build();
     }
 
-    public static MemberQuiz toSimilarQuiz(SimilarQuizSingleGradeRequestDto request, Member member, SimilarQuiz similarQuiz , Long basedQuizId) {
+    public static MemberQuiz toSimilarQuiz(SimilarQuizSingleGradeRequestDto request, Member member, Quiz quiz,SimilarQuiz similarQuiz , Long basedQuizId) {
 
         boolean userCorrect = false;
         if (similarQuiz.getAnswer() == request.getChoice()) {
@@ -91,6 +94,7 @@ public class MemberQuiz extends BaseEntity {
                 .similarQuiz(similarQuiz)
                 .isCorrect(userCorrect)
                 .choice(request.getChoice())
+                .quiz(quiz)
                 .build();
     }
 }

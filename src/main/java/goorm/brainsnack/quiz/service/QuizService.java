@@ -1,7 +1,10 @@
 package goorm.brainsnack.quiz.service;
 
+import goorm.brainsnack.quiz.dto.MemberQuizResponseDto;
+
 import java.util.List;
 
+import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.*;
 import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.MemberQuizDto;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
@@ -17,9 +20,11 @@ public interface QuizService {
     SimilarQuizSingleGradeDto gradeSingleSimilarQuiz(Long memberId, Long quizId , SimilarQuizSingleGradeRequestDto request);
     MultiResultResponseDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request);
 
-    List<MemberQuizDto> getWrongQuizList(Long memberId , String category);
-    List<MemberQuizDto> getCorrectQuizList(Long memberId , String category);
+    List<MemberQuizExistSimilarQuizDto> getWrongQuizList(Long memberId , String category);
+    List<MemberQuizExistSimilarQuizDto> getCorrectQuizList(Long memberId , String category);
     MemberSimilarQuizDto getSimilarQuiz(Long memberId, String category , Long quizId);
 
     SingleGradeDto getSingleResult(Long memberId, Long quizId);
+
+    SimilarQuizSingleGradeDto getSingleSimilarQuizResult(Long memberId, Long similarQuizId);
 }
