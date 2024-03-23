@@ -1,9 +1,6 @@
 package goorm.brainsnack.quiz.dto;
 
-import goorm.brainsnack.quiz.domain.MemberQuiz;
-import goorm.brainsnack.quiz.domain.Quiz;
-import goorm.brainsnack.quiz.domain.QuizCategory;
-import goorm.brainsnack.quiz.domain.QuizData;
+import goorm.brainsnack.quiz.domain.*;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -154,21 +151,21 @@ public class QuizResponseDto {
         private int answer;
         private String solution;
 
-        public static SimilarQuizSingleGradeDto of(Quiz quiz, MemberQuiz memberQuiz) {
+        public static SimilarQuizSingleGradeDto of(SimilarQuiz similarQuiz, MemberQuiz memberQuiz) {
             return SimilarQuizSingleGradeDto.builder()
-                    .id(quiz.getId())
-                    .quizNum(quiz.getQuizNum())
-                    .title(quiz.getTitle())
-                    .example(quiz.getExample())
-                    .choiceFirst(quiz.getChoiceFirst())
-                    .choiceSecond(quiz.getChoiceSecond())
-                    .choiceThird(quiz.getChoiceThird())
-                    .choiceFourth(quiz.getChoiceFourth())
-                    .choiceFifth(quiz.getChoiceFifth())
+                    .id(similarQuiz.getId())
+                    .quizNum(similarQuiz.getQuizNum())
+                    .title(similarQuiz.getTitle())
+                    .example(similarQuiz.getExample())
+                    .choiceFirst(similarQuiz.getChoiceFirst())
+                    .choiceSecond(similarQuiz.getChoiceSecond())
+                    .choiceThird(similarQuiz.getChoiceThird())
+                    .choiceFourth(similarQuiz.getChoiceFourth())
+                    .choiceFifth(similarQuiz.getChoiceFifth())
                     .isCorrect(memberQuiz.getIsCorrect())
                     .userChoice(memberQuiz.getChoice())
-                    .answer(quiz.getAnswer())
-                    .solution(quiz.getSolution())
+                    .answer(similarQuiz.getAnswer())
+                    .solution(similarQuiz.getSolution())
                     .build();
         }
     }

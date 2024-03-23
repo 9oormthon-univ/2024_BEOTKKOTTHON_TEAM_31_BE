@@ -33,11 +33,4 @@ public class Member extends BaseEntity {
                 .nickname(member.nickname)
                 .build();
     }
-
-    public static MemberDto toMemberDto(Member member) {
-        return MemberDto.builder()
-                .id(member.id)
-                .nickname(member.nickname)
-                .build();
-    }
 }

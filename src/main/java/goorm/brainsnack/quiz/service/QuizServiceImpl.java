@@ -7,15 +7,13 @@ import goorm.brainsnack.exception.QuizException;
 import goorm.brainsnack.member.domain.Member;
 import goorm.brainsnack.member.dto.MemberResponseDto;
 import goorm.brainsnack.member.repository.MemberRepository;
-import goorm.brainsnack.quiz.domain.MemberQuiz;
-import goorm.brainsnack.quiz.domain.Quiz;
-import goorm.brainsnack.quiz.domain.QuizCategory;
-import goorm.brainsnack.quiz.domain.QuizData;
+import goorm.brainsnack.quiz.domain.*;
 import goorm.brainsnack.quiz.dto.QuizRequestDto;
 import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 import goorm.brainsnack.quiz.repository.MemberQuizRepository;
 import goorm.brainsnack.quiz.repository.QuizDataRepository;
 import goorm.brainsnack.quiz.repository.QuizRepository;
+import goorm.brainsnack.quiz.repository.SimilarQuizRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -47,6 +45,7 @@ public class QuizServiceImpl implements QuizService {
     private final MemberQuizRepository memberQuizRepository;
     private final QuizRepository quizRepository;
     private final QuizDataRepository dataRepository;
+    private final SimilarQuizRepository similarQuizRepository;
 
     @Override
     public QuizDetailDto findQuiz(Long quizId) {
@@ -129,11 +128,12 @@ public class QuizServiceImpl implements QuizService {
          */
         List<Quiz> quizList = quizRepository.findAllByCategory(quiz.getCategory());
 
-        Quiz similarQuiz = Quiz.of((quizList.size()+1), request.getTitle(), request.getExample(),
+        SimilarQuiz similarQuiz = SimilarQuiz.of(quiz,(quizList.size() + 1), request.getTitle(), request.getExample(),
                 request.getChoiceFirst(), request.getChoiceSecond(), request.getChoiceThird(),
                 request.getChoiceFourth(), request.getChoiceFifth(), request.getAnswer(), request.getSolution(),
                 quiz.getCategory());
-        quizRepository.save(similarQuiz);
+
+        similarQuizRepository.save(similarQuiz);
 
         MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.toSimilarQuiz(request, member, similarQuiz , quiz.getId()));
 
@@ -175,12 +175,11 @@ public class QuizServiceImpl implements QuizService {
 
         QuizCategory quizCategory = QuizCategory.getInstance(category);
 
-        List<MemberQuizDto> result = memberQuizRepository
+        return memberQuizRepository
                 .findMemberQuizList(member.getId(), quizCategory).stream()
                 .filter(memberQuiz -> !memberQuiz.getIsCorrect())
                 .map(MemberQuiz::getMemberQuizDto)
                 .collect(Collectors.toList());
-        return result;
     }
 
     @Override
@@ -189,12 +188,11 @@ public class QuizServiceImpl implements QuizService {
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
         QuizCategory quizCategory = QuizCategory.getInstance(category);
 
-        List<MemberQuizDto> result = memberQuizRepository
+        return memberQuizRepository
                 .findMemberQuizList(member.getId(), quizCategory).stream()
                 .filter(MemberQuiz::getIsCorrect)
                 .map(MemberQuiz::getMemberQuizDto)
                 .collect(Collectors.toList());
-        return result;
     }
 
     @Override
@@ -202,20 +200,19 @@ public class QuizServiceImpl implements QuizService {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
 
-        MemberResponseDto.MemberDto findMember = Member.toMemberDto(member);
-
         QuizCategory quizCategory = QuizCategory.getInstance(category);
 
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
 
-        List<MemberQuiz> memberSimilarQuizList = memberQuizRepository.findMemberSimilarQuiz(findMember.getId(), quizCategory,quizId);
-        AtomicInteger count = new AtomicInteger(1);
+        // 해당 유저가 푼 기존 문제에서 만들고 풀었던 유사 문제 조회
+        List<MemberQuiz> memberSimilarQuizList = memberQuizRepository.findMemberSimilarQuiz(member.getId(), quizCategory,quizId);
 
+        AtomicInteger count = new AtomicInteger(1);
         List<MemberQuizWithIsCorrectDto> memberQuizList = memberSimilarQuizList
                 .stream().map(memberQuiz -> getMemberSimilarQuizDto(memberQuiz, count.getAndIncrement()))
                 .toList();
-        return getMemberSimilarQuizListDto(findMember,memberQuizList,quiz.getQuizNum());
+        return getMemberSimilarQuizListDto(member,memberQuizList,quiz.getQuizNum());
     }
 
     @Override

@@ -12,17 +12,16 @@ import java.util.List;
 
 public class MemberQuizResponseDto {
 
-
     @Getter @Builder
     public static class MemberQuizDto {
         private int quizNum;
-        private Long quizId;
+        private Long id;
     }
 
     @Getter @Builder
     public static class MemberQuizWithIsCorrectDto {
         private int quizNum;
-        private Long quizId;
+        private Long id;
         private Boolean isCorrect;
     }
 }

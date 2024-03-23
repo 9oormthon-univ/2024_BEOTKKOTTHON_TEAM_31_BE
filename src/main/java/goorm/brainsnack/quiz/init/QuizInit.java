@@ -32,13 +32,13 @@ public class QuizInit {
 //    @EventListener(ApplicationReadyEvent.class)
     @PostConstruct
     public void init() throws FileNotFoundException {
-        initService.init();
-//        /**
-//         * DB 에 데이터가 있는 경우에는 초기화를 하지 않습니다.
-//         */
-//        if (quizRepository.findAll().size() == 0) {
-//            initService.init();
-//        }
+//        initService.init();
+        /**
+         * DB 에 데이터가 있는 경우에는 초기화를 하지 않습니다.
+         */
+        if (quizRepository.findAll().size() == 0) {
+            initService.init();
+        }
     }
     @Component
     @Transactional
