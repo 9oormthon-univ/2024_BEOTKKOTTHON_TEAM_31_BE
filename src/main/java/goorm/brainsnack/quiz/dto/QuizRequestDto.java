@@ -34,5 +34,6 @@ public class QuizRequestDto {
         private String choiceFifth;
         private int answer;
         private String solution;
+        private String category;
     }
 }

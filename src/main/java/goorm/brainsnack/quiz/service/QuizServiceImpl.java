@@ -123,6 +123,10 @@ public class QuizServiceImpl implements QuizService {
         Quiz quiz = quizRepository.findById(quizId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_QUIZ));
 
+        if (quiz.getCategory() != QuizCategory.getInstance(request.getCategory())) {
+            throw new BaseException(ErrorCode.CATEGORY_CONFLICT);
+        }
+
         /**
          * quizNum 을 지정해주기 위해서 가져오는 코드
          */
