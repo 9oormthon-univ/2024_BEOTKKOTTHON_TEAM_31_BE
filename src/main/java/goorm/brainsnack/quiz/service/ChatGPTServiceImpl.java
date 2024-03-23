@@ -55,10 +55,6 @@ public class ChatGPTServiceImpl implements ChatGPTService {
 
         // GPT 로부터 넘어온 응답값 중에서 만들어준 유사 문제만 추출
         String[] split = extractGPTMessage(resultMap);
-        for (String s : split) {
-            System.out.println(s);
-            System.out.println("***");
-        }
 
         SimilarQuizResponseDto.CreateDto similarQuiz = createSimilarQuiz(quizDetailDto, split);
 
