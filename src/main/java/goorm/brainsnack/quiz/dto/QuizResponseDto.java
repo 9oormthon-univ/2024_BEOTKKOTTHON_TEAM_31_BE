@@ -12,7 +12,6 @@ import java.util.List;
 
 public class QuizResponseDto {
 
-
     @Getter
     @Builder
     public static class QuizDto {
@@ -67,7 +66,7 @@ public class QuizResponseDto {
     @Getter
     @Builder
     public static class SingleQuizDto {
-        private Long quizId;
+        private Long id;
         private int quizNum;
         private String category;
         private String title;
@@ -80,7 +79,7 @@ public class QuizResponseDto {
 
         public static SingleQuizDto from(Quiz quiz) {
             return SingleQuizDto.builder()
-                    .quizId(quiz.getId())
+                    .id(quiz.getId())
                     .quizNum(quiz.getQuizNum())
                     .category(quiz.getCategory().name())
                     .title(quiz.getTitle())
@@ -98,7 +97,7 @@ public class QuizResponseDto {
     @Getter
     @Builder
     public static class QuizDetailDto {
-        private Long quizId;
+        private Long id;
         private int quizNum;
         private String category;
         private String title;
@@ -113,7 +112,7 @@ public class QuizResponseDto {
 
         public static QuizDetailDto from(Quiz quiz) {
             return QuizDetailDto.builder()
-                    .quizId(quiz.getId())
+                    .id(quiz.getId())
                     .quizNum(quiz.getQuizNum())
                     .category(quiz.getCategory().name())
                     .title(quiz.getTitle())
@@ -131,7 +130,7 @@ public class QuizResponseDto {
     @Getter
     @Builder
     public static class SimilarQuizSingleGradeDto {
-        private Long quizId;
+        private Long id;
         private int quizNum;
         private String title;
         private String example;
@@ -148,7 +147,7 @@ public class QuizResponseDto {
 
         public static SimilarQuizSingleGradeDto of(Quiz quiz, MemberQuiz memberQuiz) {
             return SimilarQuizSingleGradeDto.builder()
-                    .quizId(quiz.getId())
+                    .id(quiz.getId())
                     .quizNum(quiz.getQuizNum())
                     .title(quiz.getTitle())
                     .example(quiz.getExample())
@@ -165,23 +164,10 @@ public class QuizResponseDto {
         }
     }
 
-
-    @Getter
-    @Builder
-    public static class MultiGradeDto {
-        private List<SingleGradeDto> quizzes;
-
-        public static MultiGradeDto from(List<SingleGradeDto> results) {
-            return MultiGradeDto.builder()
-                    .quizzes(results)
-                    .build();
-        }
-    }
-
     @Getter
     @Builder
     public static class SingleGradeDto {
-        private Long quizId;
+        private Long id;
         private int quizNum;
         private String title;
         private String example;
@@ -202,7 +188,7 @@ public class QuizResponseDto {
 
         public static SingleGradeDto of(Quiz quiz, MemberQuiz memberQuiz, QuizData data, int ratio) {
             return SingleGradeDto.builder()
-                    .quizId(quiz.getId())
+                    .id(quiz.getId())
                     .quizNum(quiz.getQuizNum())
                     .title(quiz.getTitle())
                     .example(quiz.getExample())
@@ -228,17 +214,24 @@ public class QuizResponseDto {
         private int totalQuizCounts;
         private int wrongQuizCounts;
         private String category;
-        private List<SingleResultResponseDto> results;
+        private List<SingleResultResponseDto> resultList;
 
         public static MultiResultResponseDto of(int totalQuizCounts, int wrongQuizCounts, List<MemberQuiz> memberQuizzes, QuizCategory category) {
-            return MultiResultResponseDto.builder().totalQuizCounts(totalQuizCounts).wrongQuizCounts(wrongQuizCounts).category(category.name()).results(memberQuizzes.stream().map(SingleResultResponseDto::from).toList()).build();
+            return MultiResultResponseDto.builder()
+                    .totalQuizCounts(totalQuizCounts)
+                    .wrongQuizCounts(wrongQuizCounts)
+                    .category(category.name())
+                    .resultList(memberQuizzes.stream()
+                            .map(SingleResultResponseDto::from)
+                            .toList())
+                    .build();
         }
     }
 
     @Getter
     @Builder
     public static class SingleResultResponseDto {
-        private Long quizId;
+        private Long id;
         private int quizNum;
         private Boolean isCorrect;
 
@@ -246,7 +239,11 @@ public class QuizResponseDto {
             Quiz quiz = memberQuiz.getQuiz();
             Long quizId = quiz.getId();
 
-            return SingleResultResponseDto.builder().quizId(quizId).quizNum(quiz.getQuizNum()).isCorrect(memberQuiz.getIsCorrect()).build();
+            return SingleResultResponseDto.builder()
+                    .id(quizId)
+                    .quizNum(quiz.getQuizNum())
+                    .isCorrect(memberQuiz.getIsCorrect())
+                    .build();
 
         }
     }

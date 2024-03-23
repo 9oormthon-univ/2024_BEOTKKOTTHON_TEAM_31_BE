@@ -1,17 +1,11 @@
 package goorm.brainsnack.quiz.service;
 
-import goorm.brainsnack.member.dto.MemberResponseDto;
-import goorm.brainsnack.quiz.dto.MemberQuizResponseDto;
-import goorm.brainsnack.quiz.dto.QuizResponseDto;
-import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
-
 import java.util.List;
 
-import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.*;
+import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.MemberQuizDto;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.*;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
-import static goorm.brainsnack.quiz.dto.QuizResponseDto.SimilarQuizSingleGradeDto.*;
-import static goorm.brainsnack.quiz.dto.SimilarQuizResponseDto.*;
+import static goorm.brainsnack.quiz.dto.SimilarQuizResponseDto.MemberSimilarQuizDto;
 
 public interface QuizService {
     QuizDetailDto findQuiz(Long quizId);
@@ -21,9 +15,7 @@ public interface QuizService {
     SingleGradeDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request);
 
     SimilarQuizSingleGradeDto gradeSingleSimilarQuiz(Long memberId, Long quizId , SimilarQuizSingleGradeRequestDto request);
-    MultiGradeDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request);
-
-    MultiResultResponseDto getFullResult(Long memberId, String category);
+    MultiResultResponseDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request);
 
     List<MemberQuizDto> getWrongQuizList(Long memberId , String category);
     List<MemberQuizDto> getCorrectQuizList(Long memberId , String category);

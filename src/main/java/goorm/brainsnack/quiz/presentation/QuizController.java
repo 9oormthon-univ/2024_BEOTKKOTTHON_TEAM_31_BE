@@ -1,13 +1,10 @@
 package goorm.brainsnack.quiz.presentation;
 
 import goorm.brainsnack.global.BaseResponse;
-import goorm.brainsnack.member.service.MemberService;
-import goorm.brainsnack.quiz.dto.*;
+import goorm.brainsnack.quiz.dto.MemberQuizResponseDto;
 import goorm.brainsnack.quiz.dto.QuizRequestDto.SimilarQuizSingleGradeRequestDto;
 import goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
-import goorm.brainsnack.quiz.dto.QuizResponseDto.CategoryQuizListDto;
-import goorm.brainsnack.quiz.dto.QuizResponseDto.GetTotalMemberDto;
-import goorm.brainsnack.quiz.dto.QuizResponseDto.SimilarQuizSingleGradeDto;
+import goorm.brainsnack.quiz.dto.QuizResponseDto.*;
 import goorm.brainsnack.quiz.service.ChatGPTService;
 import goorm.brainsnack.quiz.service.QuizService;
 import lombok.RequiredArgsConstructor;
@@ -18,12 +15,12 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static goorm.brainsnack.quiz.dto.ChatGPTRequestDto.*;
+import static goorm.brainsnack.quiz.dto.ChatGPTRequestDto.ChatCompletionDto;
+import static goorm.brainsnack.quiz.dto.ChatGPTRequestDto.ChatRequestMsgDto;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.MultiGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
-import static goorm.brainsnack.quiz.dto.QuizResponseDto.QuizDetailDto;
-import static goorm.brainsnack.quiz.dto.QuizResponseDto.SimilarQuizSingleGradeDto.*;
-import static goorm.brainsnack.quiz.dto.SimilarQuizResponseDto.*;
+import static goorm.brainsnack.quiz.dto.SimilarQuizResponseDto.CreateDto;
+import static goorm.brainsnack.quiz.dto.SimilarQuizResponseDto.MemberSimilarQuizDto;
 
 @Slf4j
 @RestController
@@ -95,7 +92,7 @@ public class QuizController {
 
     //여러 문제 채점
     @PostMapping("/members/{member-id}/quizzes/{category}/grade")
-    public ResponseEntity<BaseResponse<MultiGradeDto>> gradeQuizzes(@PathVariable("member-id") Long memberId,
+    public ResponseEntity<BaseResponse<MultiResultResponseDto>> gradeQuizzes(@PathVariable("member-id") Long memberId,
                                                                     @PathVariable("category") String category,
                                                                     @RequestBody MultiGradeRequestDto request) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeMultiQuiz(memberId, category, request)));
@@ -109,12 +106,12 @@ public class QuizController {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeSingleSimilarQuiz(memberId, quizId , request)));
     }
 
-    //전체 문제 채점 결과 리스트 조회
-    @GetMapping("/members/{member-id}/quizzes/{category}/grade")
-    public ResponseEntity<BaseResponse<MultiResultResponseDto>> getFullQuizResult(@PathVariable("member-id") Long memberId,
-                                                                                  @PathVariable("category") String category) {
-        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getFullResult(memberId, category)));
-    }
+//    //전체 문제 채점 결과 리스트 조회
+//    @GetMapping("/members/{member-id}/quizzes/{category}/grade")
+//    public ResponseEntity<BaseResponse<MultiResultResponseDto>> getFullQuizResult(@PathVariable("member-id") Long memberId,
+//                                                                                  @PathVariable("category") String category) {
+//        return ResponseEntity.ok().body(new BaseResponse<>(quizService.MultiResultResponseDto(memberId, category)));
+//    }
 
     // 내가 틀린 문제 조회 (기존 문제)
     @GetMapping("/members/{memberId}/quiz/wrong/{category}")

@@ -1,5 +1,6 @@
 package goorm.brainsnack.quiz.domain;
 
+import goorm.brainsnack.global.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -11,17 +12,17 @@ import static jakarta.persistence.EnumType.STRING;
 @Table(name = "SimilarQuiz_TB")
 @AllArgsConstructor(access= AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class SimilarQuiz {
+public class SimilarQuiz extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "quiz_id")
+    @Column(name = "similarQuiz_id")
     private Long id;
     private int quizNum;
 
     @Enumerated(STRING)
     private QuizCategory category;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "quiz_id")
     private Quiz quiz;
 

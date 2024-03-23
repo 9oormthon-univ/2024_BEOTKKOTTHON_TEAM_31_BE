@@ -13,7 +13,6 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -29,14 +28,17 @@ public class QuizInit {
     private final InitService initService;
     private final QuizRepository quizRepository;
 
-    @EventListener(ApplicationReadyEvent.class)
+
+//    @EventListener(ApplicationReadyEvent.class)
+    @PostConstruct
     public void init() throws FileNotFoundException {
-        /**
-         * DB 에 데이터가 있는 경우에는 초기화를 하지 않습니다.
-         */
-        if (quizRepository.findAll().size() == 0) {
-            initService.init();
-        }
+        initService.init();
+//        /**
+//         * DB 에 데이터가 있는 경우에는 초기화를 하지 않습니다.
+//         */
+//        if (quizRepository.findAll().size() == 0) {
+//            initService.init();
+//        }
     }
     @Component
     @Transactional

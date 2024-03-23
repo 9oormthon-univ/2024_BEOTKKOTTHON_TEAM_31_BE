@@ -11,13 +11,13 @@ import goorm.brainsnack.quiz.domain.MemberQuiz;
 import goorm.brainsnack.quiz.domain.Quiz;
 import goorm.brainsnack.quiz.domain.QuizCategory;
 import goorm.brainsnack.quiz.domain.QuizData;
-import goorm.brainsnack.quiz.dto.MemberQuizResponseDto;
 import goorm.brainsnack.quiz.dto.QuizRequestDto;
 import goorm.brainsnack.quiz.dto.SimilarQuizResponseDto;
 import goorm.brainsnack.quiz.repository.MemberQuizRepository;
 import goorm.brainsnack.quiz.repository.QuizDataRepository;
 import goorm.brainsnack.quiz.repository.QuizRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,12 +29,14 @@ import java.util.stream.Collectors;
 
 import static goorm.brainsnack.quiz.domain.MemberQuiz.getMemberSimilarQuizDto;
 import static goorm.brainsnack.quiz.domain.MemberQuiz.getMemberSimilarQuizListDto;
-import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.*;
+import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.MemberQuizDto;
+import static goorm.brainsnack.quiz.dto.MemberQuizResponseDto.MemberQuizWithIsCorrectDto;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.MultiGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizRequestDto.SingleGradeRequestDto;
 import static goorm.brainsnack.quiz.dto.QuizResponseDto.*;
-import static goorm.brainsnack.quiz.dto.QuizResponseDto.SimilarQuizSingleGradeDto.*;
+import static goorm.brainsnack.quiz.dto.QuizResponseDto.SimilarQuizSingleGradeDto.of;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
@@ -83,21 +85,28 @@ public class QuizServiceImpl implements QuizService {
 
     @Transactional
     @Override
-    public MultiGradeDto gradeMultiQuiz(Long memberId, String category, MultiGradeRequestDto request) {
+    public MultiResultResponseDto gradeMultiQuiz(Long memberId, String categoryInput, MultiGradeRequestDto request) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
+        List<MemberQuiz> memberQuizzes = memberQuizRepository.findAllByMemberAndCategory(member, QuizCategory.getInstance(categoryInput));
+        QuizCategory category = QuizCategory.getInstance(categoryInput);
+
+        int totalQuizCounts = quizRepository.findAllByCategory(category).size();
+        int wrongQuizCounts = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
+
         List<SingleGradeDto> results = new ArrayList<>();
         for (SingleGradeRequestDto gradeRequest : request.getGradeRequests()) {
-            if (!gradeRequest.getCategory().equals(category)) {
-                throw new BaseException(ErrorCode.CATEGORY_CONFLICT);
-            }
-            results.add(gradeSingleQuiz(memberId, gradeRequest.getQuizId(), gradeRequest));
+//            if (!gradeRequest.getCategory().equals(category)) {
+//                throw new BaseException(ErrorCode.CATEGORY_CONFLICT);
+//            }
+            results.add(gradeSingleQuiz(memberId, gradeRequest.getId(), gradeRequest));
         }
-        return MultiGradeDto.from(results);
+        return MultiResultResponseDto.of(totalQuizCounts, wrongQuizCounts, memberQuizzes, category);
     }
 
     @Override
     @Transactional
     public SimilarQuizSingleGradeDto gradeSingleSimilarQuiz(Long memberId, Long quizId , QuizRequestDto.SimilarQuizSingleGradeRequestDto request) {
-
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
 
@@ -146,19 +155,6 @@ public class QuizServiceImpl implements QuizService {
         data.updateQuizData(memberQuiz);
 
         return SingleGradeDto.of(quiz, memberQuiz, data, getRatio(data));
-    }
-
-    @Override
-    public MultiResultResponseDto getFullResult(Long memberId, String categoryInput) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
-        List<MemberQuiz> memberQuizzes = memberQuizRepository.findAllByMemberAndCategory(member, QuizCategory.getInstance(categoryInput));
-        QuizCategory category = QuizCategory.getInstance(categoryInput);
-
-        int totalQuizCounts = quizRepository.findAllByCategory(category).size();
-        int wrongQuizCounts = memberQuizRepository.findAllByMemberAndCategoryAndIsCorrect(member, false, category).size();
-
-        return MultiResultResponseDto.of(totalQuizCounts, wrongQuizCounts, memberQuizzes, category);
     }
 
     @Override
@@ -213,7 +209,7 @@ public class QuizServiceImpl implements QuizService {
     private int getRatio(QuizData data) {
         int ratio = 0;
         if (data.getQuizParticipantsCounts() != 0) {
-            ratio = data.getCorrectAnswerCounts() / data.getQuizParticipantsCounts();
+            ratio = data.getCorrectAnswerCounts() / data.getQuizParticipantsCounts() * 100;
         }
         return ratio;
     }
