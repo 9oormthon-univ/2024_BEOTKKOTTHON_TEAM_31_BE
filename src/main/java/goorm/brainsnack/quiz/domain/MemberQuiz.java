@@ -54,7 +54,7 @@ public class MemberQuiz extends BaseEntity {
         return MemberQuizWithIsCorrectDto.builder()
                 .isCorrect(memberQuiz.getIsCorrect())
                 .quizNum(count)
-                .id(memberQuiz.getId())
+                .id(memberQuiz.getSimilarQuiz().getId())
                 .build();
     }
 
