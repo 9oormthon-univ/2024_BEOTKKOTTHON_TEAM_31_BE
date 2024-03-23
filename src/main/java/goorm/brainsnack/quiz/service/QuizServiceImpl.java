@@ -145,7 +145,7 @@ public class QuizServiceImpl implements QuizService {
 
         similarQuizRepository.save(similarQuiz);
 
-        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.toSimilarQuiz(request, member, quiz ,similarQuiz , quiz.getId()));
+        MemberQuiz memberQuiz = memberQuizRepository.save(MemberQuiz.toSimilarQuiz(request, member ,similarQuiz));
 
 
         return of(similarQuiz,memberQuiz);

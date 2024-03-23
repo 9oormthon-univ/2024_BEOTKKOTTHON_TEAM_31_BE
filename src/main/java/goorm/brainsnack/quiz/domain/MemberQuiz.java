@@ -83,7 +83,7 @@ public class MemberQuiz extends BaseEntity {
                 .build();
     }
 
-    public static MemberQuiz toSimilarQuiz(SimilarQuizSingleGradeRequestDto request, Member member, Quiz quiz,SimilarQuiz similarQuiz , Long basedQuizId) {
+    public static MemberQuiz toSimilarQuiz(SimilarQuizSingleGradeRequestDto request, Member member,SimilarQuiz similarQuiz) {
 
         boolean userCorrect = false;
         if (similarQuiz.getAnswer() == request.getChoice()) {
@@ -94,7 +94,6 @@ public class MemberQuiz extends BaseEntity {
                 .similarQuiz(similarQuiz)
                 .isCorrect(userCorrect)
                 .choice(request.getChoice())
-                .quiz(quiz)
                 .build();
     }
 }
