@@ -16,11 +16,11 @@ public class ChatGPTConfig {
 
     @Value("${openai.secret-key}")
     private String secretKey;
-    @Bean
+
     public RestTemplate restTemplate() {
         return new RestTemplate();
     }
-    @Bean
+
     public HttpHeaders httpHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(secretKey);
