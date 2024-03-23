@@ -35,6 +35,15 @@ public class QuizResponseDto {
         private int size;
         private List<SingleQuizDto> quizzes;
 
+
+        public static CategoryQuizListDto from(List<Quiz> quizzes) {
+            return CategoryQuizListDto.builder()
+                    .size(quizzes.size())
+                    .quizzes(quizzes.stream()
+                            .map(SingleQuizDto::from)
+                            .toList())
+                    .build();
+        }
         public static CategoryQuizListDto of(int quizSize, List<SingleQuizDto> quizDtos) {
             return CategoryQuizListDto.builder()
                     .quizzes(quizDtos)

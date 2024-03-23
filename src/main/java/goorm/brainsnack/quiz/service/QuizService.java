@@ -10,7 +10,7 @@ import static goorm.brainsnack.quiz.dto.SimilarQuizResponseDto.MemberSimilarQuiz
 public interface QuizService {
     QuizDetailDto findQuiz(Long quizId);
     GetTotalMemberDto getTotalNum(Long memberId);
-    CategoryQuizListDto getCategoryQuizzes(String category);
+    CategoryQuizListDto getCategoryQuizzes(Long memberId, String category);
 
     SingleGradeDto gradeSingleQuiz(Long memberId, Long quizId, SingleGradeRequestDto request);
 

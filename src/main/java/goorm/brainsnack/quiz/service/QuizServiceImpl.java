@@ -23,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -70,17 +71,19 @@ public class QuizServiceImpl implements QuizService {
     }
 
     @Override
-    public CategoryQuizListDto getCategoryQuizzes(String categoryName) {
+    public CategoryQuizListDto getCategoryQuizzes(Long memberId, String categoryName) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BaseException(ErrorCode.NOT_EXIST_USER));
         QuizCategory category = QuizCategory.getInstance(categoryName);
-
+        List<MemberQuiz> memberQuiz = memberQuizRepository.findAllByMember(member);
         List<Quiz> quizzes = quizRepository.findAllByCategory(category);
 
-        return CategoryQuizListDto.builder()
-                .size(quizzes.size())
-                .quizzes(quizzes.stream()
-                        .map(SingleQuizDto::from)
-                        .toList())
-                .build();
+        List<Quiz> userRemainQuizzes = quizzes.stream()
+                .filter(q -> memberQuiz.stream()
+                        .noneMatch(mq -> Objects.equals(q.getId(), mq.getQuiz().getId())))
+                .toList();
+
+        return CategoryQuizListDto.from(userRemainQuizzes);
     }
 
     @Transactional
@@ -102,6 +105,7 @@ public class QuizServiceImpl implements QuizService {
 
             // 이미 풀이한 문제는 결과 가져오기
             Optional<MemberQuiz> memberQuiz = memberQuizRepository.findById(gradeRequest.getId());
+            log.info("mq - {} : 있음? {}", gradeRequest.getId(), memberQuiz.isPresent());
             if (memberQuiz.isPresent()) {
                 results.add(SingleResultResponseDto.from(memberQuiz.get()));
             } else {

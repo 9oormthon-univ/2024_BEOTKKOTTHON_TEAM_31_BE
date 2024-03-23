@@ -71,9 +71,10 @@ public class QuizController {
     }
 
     //영역별 모든 문제 조회
-    @GetMapping("/quiz/{category}")
-    public ResponseEntity<BaseResponse<CategoryQuizListDto>> getCategoryQuizzes(@PathVariable String category) {
-        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getCategoryQuizzes(category)));
+    @GetMapping("/members/{member-id}/quizzes/{category}")
+    public ResponseEntity<BaseResponse<CategoryQuizListDto>> getCategoryQuizzes(@PathVariable("member-id") Long memberId,
+                                                                                @PathVariable String category) {
+        return ResponseEntity.ok().body(new BaseResponse<>(quizService.getCategoryQuizzes(memberId, category)));
     }
 
     //총 풀이 문제 조회
@@ -105,8 +106,9 @@ public class QuizController {
                                                                                    @RequestBody SimilarQuizSingleGradeRequestDto request) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.gradeSingleSimilarQuiz(memberId, quizId , request)));
     }
+
     // 한 문제 해설 조회
-    @GetMapping("/members/{member-id}/quiz/{quiz-id}")
+    @GetMapping("/members/{member-id}/quiz/{quiz-id}/answer")
     public ResponseEntity<BaseResponse<SingleGradeDto>> getSingleResult(@PathVariable("member-id") Long memberId,
                                                                         @PathVariable("quiz-id") Long quizId) {
         return ResponseEntity.ok().body(new BaseResponse<>(quizService.getSingleResult(memberId, quizId)));
